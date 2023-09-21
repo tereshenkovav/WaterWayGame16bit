@@ -211,6 +211,9 @@ begin
   DrawLineVert(SCREENW-3,2,SCREENH-3,16) ;
   DrawLineVert(SCREENW-2,1,SCREENH-2,17) ;
   DrawLineVert(SCREENW-1,0,SCREENH-1,18) ;
+
+  SetCursorXY(28,1) ; Write('Current') ;
+  SetCursorXY(28,6) ; Write(' Next') ;
 end ;
 
 function TGame.Update():Boolean ;
