@@ -5,6 +5,7 @@ interface
 procedure Screen(num:Byte) ;
 procedure ClearScreen(color:Byte) ;  
 procedure DrawLineHorz(x1,x2,y:Word; color:Byte) ;
+procedure DrawLineHorzByLen(x1,len,y:Word; color:Byte) ;
 procedure DrawLineVert(x,y1,y2:Word; color:Byte) ; 
 procedure SetPaletteData(start:Byte; count:Byte; data:array of Byte) ; 
 procedure SetPaletteColor(color:Byte; r,g,b:Byte) ; 
@@ -39,10 +40,14 @@ asm
 end ; 
 
 procedure DrawLineHorz(x1,x2,y:Word; color:Byte) ; 
-var pos,len:Word ;
+begin
+  DrawLineHorzByLen(x1,x2-x1+1,y,color) ;
+end ;
+
+procedure DrawLineHorzByLen(x1,len,y:Word; color:Byte) ; 
+var pos:Word ;
 begin
   pos:=SCREENWIDTH*y+x1 ;
-  len:=x2-x1+1 ;
 asm
   mov ax,SegA000
   mov es,ax
