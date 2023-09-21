@@ -9,9 +9,9 @@ var
    tekgame:TGame ;
 
 begin
+   Randomize() ;
 
    Screen($13) ;
-   ClearScreen(0) ;
 
    tekgame:=TGame.Create() ;
 
@@ -24,6 +24,8 @@ begin
    SoundFreq(1000) ;
  
    framen:=0 ;
+   ClearScreen(0) ;
+   tekgame.RenderStatic() ;
    while true do begin
      tekframe:=StartFrame() ;
 

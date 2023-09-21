@@ -23,18 +23,28 @@ type
     procedure Draw(x,y:Integer); override ;
   end ;
 
+  TBlockVert = class(TBlock)
+  private
+  public
+    procedure Draw(x,y:Integer); override ;
+  end ;
+
   TGame = class
   private
     selx,sely:Integer ;
     oldselx,oldsely:Integer ;
     map:array of array of TBlock ;
     empty:TBlockEmpty ;
+    tekblock:TBlock ;
+    nextblock:TBlock ;
     procedure DrawSelector() ;
     procedure ClearOldSelector() ;
+    function genRandomPipeBlock():TBlock ;
   public
     constructor Create() ;
     destructor Destroy() ; override ;
     procedure Render() ;
+    procedure RenderStatic() ;
     function Update():Boolean ;
   end ;
 
@@ -44,6 +54,8 @@ uses GameEngine16 ;
 const 
   BLOCKSIZE = 20 ;
   MAPSIZE = 10 ;
+  SCREENW = 320 ;
+  SCREENH = 200 ;
 
 function TBlock.isEmpty():Boolean ; 
 begin
@@ -56,10 +68,8 @@ begin
 end ;
 
 procedure TBlockEmpty.Draw(x,y:Integer) ; 
-var i:Integer ;
 begin
-  for i:=0 to BLOCKSIZE-1 do
-    DrawLineHorzByLen(x*BLOCKSIZE,BLOCKSIZE,y*BLOCKSIZE+i,0) ;
+  FillRect(x*BLOCKSIZE,y*BLOCKSIZE,BLOCKSIZE,BLOCKSIZE,0) ;
 end ;
 
 procedure TBlockHorz.Draw(x,y:Integer) ; 
@@ -68,6 +78,9 @@ begin
   x1:=x*BLOCKSIZE ;
   y1:=y*BLOCKSIZE ;
   y2:=y*BLOCKSIZE+BLOCKSIZE-1 ;
+
+  FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
+
   DrawLineHorzByLen(x1,BLOCKSIZE,y1+5,18) ;
   DrawLineHorzByLen(x1,BLOCKSIZE,y1+6,17) ;
   DrawLineHorzByLen(x1,BLOCKSIZE,y1+7,16) ;
@@ -79,6 +92,36 @@ begin
   if (filledv>0) then 
     for yw:=y1+8 to y2-8 do
       DrawLineHorzByLen(x1,BLOCKSIZE,yw,11) ;
+end ;
+
+procedure TBlockVert.Draw(x,y:Integer) ; 
+var x1,y1,x2,xw:Integer ;
+begin
+  x1:=x*BLOCKSIZE ;
+  y1:=y*BLOCKSIZE ;
+  x2:=x*BLOCKSIZE+BLOCKSIZE-1 ;
+
+  FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
+
+  DrawLineVertByLen(x1+5,y1,BLOCKSIZE,18) ;
+  DrawLineVertByLen(x1+6,y1,BLOCKSIZE,17) ;
+  DrawLineVertByLen(x1+7,y1,BLOCKSIZE,16) ;
+
+  DrawLineVertByLen(x2-7,y1,BLOCKSIZE,16) ;
+  DrawLineVertByLen(x2-6,y1,BLOCKSIZE,17) ;
+  DrawLineVertByLen(x2-5,y1,BLOCKSIZE,18) ;
+
+  if (filledv>0) then 
+    for xw:=x1+8 to x2-8 do
+      DrawLineVertByLen(xw,y1,BLOCKSIZE,11) ;
+end ;
+
+function TGame.genRandomPipeBlock():TBlock ;
+var r:Integer ;
+begin
+  r:=Random(2) ;
+  if r=0 then Result:=TBlockHorz.Create() ;
+  if r=1 then Result:=TBlockVert.Create() ;
 end ;
 
 procedure TGame.ClearOldSelector() ;
@@ -121,6 +164,8 @@ begin
   for i:=0 to MAPSIZE-1 do
     for j:=0 to MAPSIZE-1 do
       map[i][j]:=empty ;
+  tekblock:=genRandomPipeBlock() ;
+  nextblock:=genRandomPipeBlock() ;
 end ;
 
 destructor TGame.Destroy() ;
@@ -143,10 +188,29 @@ begin
     for j:=0 to MAPSIZE-1 do
       map[i][j].Draw(i,j) ;
 
+  tekblock.Draw(12,1) ;
+  nextblock.Draw(12,3) ;
+
   if (oldselx<>selx)or(oldsely<>sely) then begin
     if (oldselx<>-1) then ClearOldSelector() ;    
   end ;
   DrawSelector() ;
+end ;
+
+procedure TGame.RenderStatic() ;
+begin
+  DrawLineHorz(MAPSIZE*BLOCKSIZE,SCREENW-1,0,18) ;
+  DrawLineHorz(MAPSIZE*BLOCKSIZE,SCREENW-1,1,17) ;
+  DrawLineHorz(MAPSIZE*BLOCKSIZE,SCREENW-1,2,16) ;
+  DrawLineHorz(MAPSIZE*BLOCKSIZE,SCREENW-1,SCREENH-3,16) ;
+  DrawLineHorz(MAPSIZE*BLOCKSIZE,SCREENW-1,SCREENH-2,17) ;
+  DrawLineHorz(MAPSIZE*BLOCKSIZE,SCREENW-1,SCREENH-1,18) ;
+  DrawLineVert(MAPSIZE*BLOCKSIZE,0,SCREENH-1,18) ;
+  DrawLineVert(MAPSIZE*BLOCKSIZE+1,1,SCREENH-2,17) ;
+  DrawLineVert(MAPSIZE*BLOCKSIZE+2,2,SCREENH-3,16) ;
+  DrawLineVert(SCREENW-3,2,SCREENH-3,16) ;
+  DrawLineVert(SCREENW-2,1,SCREENH-2,17) ;
+  DrawLineVert(SCREENW-1,0,SCREENH-1,18) ;
 end ;
 
 function TGame.Update():Boolean ;
@@ -161,7 +225,11 @@ begin
     if scan=75 then if selx>0 then Dec(selx) ;
     if scan=77 then if selx<MAPSIZE-1 then Inc(selx) ;
     if scan=57 then 
-      if map[selx][sely].isEmpty() then map[selx][sely]:=TBlockHorz.Create() ;
+      if map[selx][sely].isEmpty() then begin
+        map[selx][sely]:=tekblock ;
+        tekblock:=nextblock ;
+        nextblock:=genRandomPipeBlock() ;
+      end ;
     if scan=1 then Result:=False ;
   end ;
 end ;

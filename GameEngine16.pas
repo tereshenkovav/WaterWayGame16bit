@@ -4,9 +4,11 @@ interface
 
 procedure Screen(num:Byte) ;
 procedure ClearScreen(color:Byte) ;  
+procedure FillRect(x1,y1,w,h:Word; color:Byte) ;
 procedure DrawLineHorz(x1,x2,y:Word; color:Byte) ;
 procedure DrawLineHorzByLen(x1,len,y:Word; color:Byte) ;
 procedure DrawLineVert(x,y1,y2:Word; color:Byte) ; 
+procedure DrawLineVertByLen(x,y1,len:Word; color:Byte) ; 
 procedure SetPaletteData(start:Byte; count:Byte; data:array of Byte) ; 
 procedure SetPaletteColor(color:Byte; r,g,b:Byte) ; 
 function IsKeyPressed(var key:Byte; var scan:Byte):Boolean ; 
@@ -39,6 +41,13 @@ asm
   rep stosw
 end ; 
 
+procedure FillRect(x1,y1,w,h:Word; color:Byte) ;
+var y:Integer ;
+begin
+  for y:=y1 to y1+h-1 do 
+    DrawLineHorzByLen(x1,w,y,color) ;
+end ;
+
 procedure DrawLineHorz(x1,x2,y:Word; color:Byte) ; 
 begin
   DrawLineHorzByLen(x1,x2-x1+1,y,color) ;
@@ -59,11 +68,15 @@ end ;
 end ;
 
 procedure DrawLineVert(x,y1,y2:Word; color:Byte) ; 
-var pos,len:Word ;
+begin
+  DrawLineVertByLen(x,y1,y2-y1+1,color) ;
+end ;
+
+procedure DrawLineVertByLen(x,y1,len:Word; color:Byte) ; 
+var pos:Word ;
 label lab ;
 begin
   pos:=SCREENWIDTH*y1+x ;
-  len:=y2-y1+1 ;
 asm
   mov ax,SegA000
   mov es,ax
