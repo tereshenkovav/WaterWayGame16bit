@@ -6,7 +6,7 @@ procedure Screen(num:Byte) ;
 procedure ClearScreen(color:Byte) ;  
 procedure FillRect(x1,y1,w,h:Word; color:Byte) ;
 procedure DrawLineHorz(x1,x2,y:Word; color:Byte) ;
-procedure DrawLineHorzByLen(x1,len,y:Word; color:Byte) ;
+procedure DrawLineHorzByLen(x1:Word; len:Integer; y:Word; color:Byte) ; 
 procedure DrawLineVert(x,y1,y2:Word; color:Byte) ; 
 procedure DrawLineVertByLen(x,y1,len:Word; color:Byte) ; 
 procedure SetCursorXY(x,y:Byte) ; 
@@ -54,10 +54,15 @@ begin
   DrawLineHorzByLen(x1,x2-x1+1,y,color) ;
 end ;
 
-procedure DrawLineHorzByLen(x1,len,y:Word; color:Byte) ; 
+procedure DrawLineHorzByLen(x1:Word;len:Integer;y:Word; color:Byte) ; 
 var pos:Word ;
 begin
-  pos:=SCREENWIDTH*y+x1 ;
+  if len<0 then begin
+    pos:=SCREENWIDTH*y+x1+len+1 ;
+    len:=-len ;
+  end
+  else
+    pos:=SCREENWIDTH*y+x1 ;
 asm
   mov ax,SegA000
   mov es,ax

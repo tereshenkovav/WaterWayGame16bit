@@ -17,6 +17,18 @@ type
     function isEmpty():Boolean ; override ;
   end ;
 
+  TBlockStartHorz = class(TBlock)
+  private
+  public
+    procedure Draw(x,y:Integer); override ;
+  end ;
+
+  TBlockFinish = class(TBlock)
+  private
+  public
+    procedure Draw(x,y:Integer); override ;
+  end ;
+
   TBlockHorz = class(TBlock)
   private
   public
@@ -24,6 +36,30 @@ type
   end ;
 
   TBlockVert = class(TBlock)
+  private
+  public
+    procedure Draw(x,y:Integer); override ;
+  end ;
+
+  TBlockLeftTop = class(TBlock)
+  private
+  public
+    procedure Draw(x,y:Integer); override ;
+  end ;
+
+  TBlockRightTop = class(TBlock)
+  private
+  public
+    procedure Draw(x,y:Integer); override ;
+  end ;
+
+  TBlockLeftBottom = class(TBlock)
+  private
+  public
+    procedure Draw(x,y:Integer); override ;
+  end ;
+
+  TBlockRightBottom = class(TBlock)
   private
   public
     procedure Draw(x,y:Integer); override ;
@@ -57,6 +93,22 @@ const
   SCREENW = 320 ;
   SCREENH = 200 ;
 
+procedure DrawCornerDXDY(x1,y1,dx,dy:Integer; color:byte) ;
+var x2:Integer ;
+begin
+  DrawLineHorzByLen(x1,dx,y1,color) ;
+  x2:=x1+dx ;
+  if dx<0 then Inc(x2) else Dec(x2) ;
+
+  DrawLineVertByLen(x2,y1,dy,color) ;
+end ;
+
+procedure DrawCornerDYDX(x1,y1,dy,dx:Integer; color:byte) ;
+begin
+  DrawLineVertByLen(x1,y1,dy,color) ;
+  DrawLineHorzByLen(x1,dx,y1+dy-1,color) ;
+end ;
+
 function TBlock.isEmpty():Boolean ; 
 begin
   Result:=False ;
@@ -70,6 +122,42 @@ end ;
 procedure TBlockEmpty.Draw(x,y:Integer) ; 
 begin
   FillRect(x*BLOCKSIZE,y*BLOCKSIZE,BLOCKSIZE,BLOCKSIZE,0) ;
+end ;
+
+procedure TBlockStartHorz.Draw(x,y:Integer) ; 
+var x1,y1,y2,yw:Integer ;
+begin
+  x1:=x*BLOCKSIZE ;
+  y1:=y*BLOCKSIZE ;
+  y2:=y*BLOCKSIZE+BLOCKSIZE-1 ;
+
+  FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
+
+  DrawLineHorzByLen(x1+BLOCKSIZE div 2,BLOCKSIZE div 2,y1+5,18) ;
+  DrawLineHorzByLen(x1+BLOCKSIZE div 2,BLOCKSIZE div 2,y1+6,17) ;
+  DrawLineHorzByLen(x1+BLOCKSIZE div 2,BLOCKSIZE div 2,y1+7,16) ;
+
+  DrawLineHorzByLen(x1+BLOCKSIZE div 2,BLOCKSIZE div 2,y2-7,16) ;
+  DrawLineHorzByLen(x1+BLOCKSIZE div 2,BLOCKSIZE div 2,y2-6,17) ;
+  DrawLineHorzByLen(x1+BLOCKSIZE div 2,BLOCKSIZE div 2,y2-5,18) ;
+
+  DrawLineVertByLen(x1+10,y1+6,8,18) ;
+  DrawLineVertByLen(x1+11,y1+7,6,17) ;
+  DrawLineVertByLen(x1+12,y1+8,4,16) ;
+end ;
+
+procedure TBlockFinish.Draw(x,y:Integer) ; 
+var x1,y1:Integer ;
+begin
+  x1:=x*BLOCKSIZE ;
+  y1:=y*BLOCKSIZE ;
+
+  FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
+
+  DrawLineHorzByLen(x1,BLOCKSIZE,y1,9) ;
+  DrawLineHorzByLen(x1,BLOCKSIZE,y1+BLOCKSIZE-1,9) ;
+  DrawLineVertByLen(x1,y1,BLOCKSIZE,9) ;
+  DrawLineVertByLen(x1+BLOCKSIZE-1,y1,BLOCKSIZE,9) ;
 end ;
 
 procedure TBlockHorz.Draw(x,y:Integer) ; 
@@ -114,6 +202,82 @@ begin
   if (filledv>0) then 
     for xw:=x1+8 to x2-8 do
       DrawLineVertByLen(xw,y1,BLOCKSIZE,11) ;
+end ;
+
+procedure TBlockLeftTop.Draw(x,y:Integer) ; 
+var x1,y1,x2,y2:Integer ;
+begin
+  x1:=x*BLOCKSIZE ;
+  y1:=y*BLOCKSIZE ;
+  x2:=x*BLOCKSIZE+BLOCKSIZE-1 ;
+  y2:=y*BLOCKSIZE+BLOCKSIZE-1 ;
+
+  FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
+
+  DrawCornerDYDX(x1+5,y1,6,-6,18) ;
+  DrawCornerDYDX(x1+6,y1,7,-7,17) ;
+  DrawCornerDYDX(x1+7,y1,8,-8,16) ;
+
+  DrawCornerDYDX(x1+12,y1,13,-13,16) ;
+  DrawCornerDYDX(x1+13,y1,14,-14,17) ;
+  DrawCornerDYDX(x1+14,y1,15,-15,18) ;
+end ;
+
+procedure TBlockRightTop.Draw(x,y:Integer) ; 
+var x1,y1,x2,y2:Integer ;
+begin
+  x1:=x*BLOCKSIZE ;
+  y1:=y*BLOCKSIZE ;
+  x2:=x*BLOCKSIZE+BLOCKSIZE-1 ;
+  y2:=y*BLOCKSIZE+BLOCKSIZE-1 ;
+
+  FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
+
+  DrawCornerDYDX(x1+14,y1,6,6,18) ;
+  DrawCornerDYDX(x1+13,y1,7,7,17) ;
+  DrawCornerDYDX(x1+12,y1,8,8,16) ;
+
+  DrawCornerDYDX(x1+7,y1,13,13,16) ;
+  DrawCornerDYDX(x1+6,y1,14,14,17) ;
+  DrawCornerDYDX(x1+5,y1,15,15,18) ;
+end ;
+
+procedure TBlockLeftBottom.Draw(x,y:Integer) ; 
+var x1,y1,x2,y2:Integer ;
+begin
+  x1:=x*BLOCKSIZE ;
+  y1:=y*BLOCKSIZE ;
+  x2:=x*BLOCKSIZE+BLOCKSIZE-1 ;
+  y2:=y*BLOCKSIZE+BLOCKSIZE-1 ;
+
+  FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
+
+  DrawCornerDXDY(x1,y1+5,15,15,18) ;
+  DrawCornerDXDY(x1,y1+6,14,14,17) ;
+  DrawCornerDXDY(x1,y1+7,13,13,16) ;
+  
+  DrawCornerDXDY(x1,y1+12,8,8,16) ;
+  DrawCornerDXDY(x1,y1+13,7,7,17) ;
+  DrawCornerDXDY(x1,y1+14,6,6,18) ;
+end ;
+
+procedure TBlockRightBottom.Draw(x,y:Integer) ; 
+var x1,y1,x2,y2:Integer ;
+begin
+  x1:=x*BLOCKSIZE ;
+  y1:=y*BLOCKSIZE ;
+  x2:=x*BLOCKSIZE+BLOCKSIZE-1 ;
+  y2:=y*BLOCKSIZE+BLOCKSIZE-1 ;
+
+  FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
+
+  DrawCornerDXDY(x1+BLOCKSIZE-1,y1+5,-15,15,18) ;
+  DrawCornerDXDY(x1+BLOCKSIZE-1,y1+6,-14,14,17) ;
+  DrawCornerDXDY(x1+BLOCKSIZE-1,y1+7,-13,13,16) ;
+
+  DrawCornerDXDY(x1+BLOCKSIZE-1,y1+12,-8,8,16) ;
+  DrawCornerDXDY(x1+BLOCKSIZE-1,y1+13,-7,7,17) ;
+  DrawCornerDXDY(x1+BLOCKSIZE-1,y1+14,-6,6,18) ;
 end ;
 
 function TGame.genRandomPipeBlock():TBlock ;
@@ -164,6 +328,18 @@ begin
   for i:=0 to MAPSIZE-1 do
     for j:=0 to MAPSIZE-1 do
       map[i][j]:=empty ;
+
+  // level conf
+  map[2][4]:=TBlockStartHorz.Create() ;
+
+  map[8][1]:=TBlockFinish.Create() ;
+  map[4][8]:=TBlockFinish.Create() ;
+
+  map[5][5]:=TBlockLeftTop.Create() ;
+  map[3][5]:=TBlockRightTop.Create() ;
+  map[5][3]:=TBlockLeftBottom.Create() ;
+  map[3][3]:=TBlockRightBottom.Create() ;
+
   tekblock:=genRandomPipeBlock() ;
   nextblock:=genRandomPipeBlock() ;
 end ;
