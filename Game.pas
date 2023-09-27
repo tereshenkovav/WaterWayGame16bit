@@ -70,30 +70,35 @@ type
   TBlockVert = class(TBlock)
   private
   public
+    constructor Create() ; override ;
     procedure Draw(x,y:Integer); override ;
   end ;
 
   TBlockLeftTop = class(TBlock)
   private
   public
+    constructor Create() ; override ;
     procedure Draw(x,y:Integer); override ;
   end ;
 
   TBlockRightTop = class(TBlock)
   private
   public
+    constructor Create() ; override ;
     procedure Draw(x,y:Integer); override ;
   end ;
 
   TBlockLeftBottom = class(TBlock)
   private
   public
+    constructor Create() ; override ;
     procedure Draw(x,y:Integer); override ;
   end ;
 
   TBlockRightBottom = class(TBlock)
   private
   public
+    constructor Create() ; override ;
     procedure Draw(x,y:Integer); override ;
   end ;
 
@@ -323,6 +328,22 @@ begin
   DrawWater(x1,y1) ;
 end ;
 
+constructor TBlockVert.Create() ;
+var x,y:Byte ;
+begin
+  inherited Create() ;
+  SetLength(items,BLOCKSIZE) ;
+  SetLength(links,BLOCKSIZE-1) ;
+  for x:=0 to BLOCKSIZE-1 do begin
+    items[x].filled:=False ;
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(y+8,x) ;
+    if x<BLOCKSIZE-1 then links[x]:=NewLink(x,x+1) ;
+  end ;
+  entry[0,-1]:=0 ;
+  entry[0,1]:=BLOCKSIZE-1 ;
+end ;
+
 procedure TBlockVert.Draw(x,y:Integer) ; 
 var x1,y1,x2,xw:Integer ;
 begin
@@ -339,6 +360,32 @@ begin
   DrawLineVertByLen(x2-7,y1,BLOCKSIZE,16) ;
   DrawLineVertByLen(x2-6,y1,BLOCKSIZE,17) ;
   DrawLineVertByLen(x2-5,y1,BLOCKSIZE,18) ;
+
+  DrawWater(x1,y1) ;
+end ;
+
+constructor TBlockLeftTop.Create() ;
+var x,y:Byte ;
+begin
+  inherited Create() ;
+  SetLength(items,BLOCKSIZE) ;
+  SetLength(links,BLOCKSIZE-1) ;
+
+  for x:=0 to 11 do begin
+    items[x].filled:=False ;
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(x,y+8) ;
+    links[x]:=NewLink(x,x+1) ;
+  end ;
+
+  for x:=0 to 7 do begin
+    items[12+x].filled:=False ;
+    for y:=0 to 3 do
+      items[12+x].pixels[y]:=NewXY(y+8,7-x) ;
+    if x<7 then links[12+x]:=NewLink(12+x,12+x+1) ;
+  end ;
+  entry[-1,0]:=0 ;
+  entry[0,-1]:=BLOCKSIZE-1 ;
 end ;
 
 procedure TBlockLeftTop.Draw(x,y:Integer) ; 
@@ -358,6 +405,32 @@ begin
   DrawCornerDYDX(x1+12,y1,13,-13,16) ;
   DrawCornerDYDX(x1+13,y1,14,-14,17) ;
   DrawCornerDYDX(x1+14,y1,15,-15,18) ;
+
+  DrawWater(x1,y1) ;
+end ;
+
+constructor TBlockRightTop.Create() ;
+var x,y:Byte ;
+begin
+  inherited Create() ;
+  SetLength(items,BLOCKSIZE) ;
+  SetLength(links,BLOCKSIZE-1) ;
+
+  for x:=0 to 11 do begin
+    items[x].filled:=False ;
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(19-x,y+8) ;
+    links[x]:=NewLink(x,x+1) ;
+  end ;
+
+  for x:=0 to 7 do begin
+    items[12+x].filled:=False ;
+    for y:=0 to 3 do
+      items[12+x].pixels[y]:=NewXY(y+8,7-x) ;
+    if x<7 then links[12+x]:=NewLink(12+x,12+x+1) ;
+  end ;
+  entry[1,0]:=0 ;
+  entry[0,-1]:=BLOCKSIZE-1 ;
 end ;
 
 procedure TBlockRightTop.Draw(x,y:Integer) ; 
@@ -377,6 +450,32 @@ begin
   DrawCornerDYDX(x1+7,y1,13,13,16) ;
   DrawCornerDYDX(x1+6,y1,14,14,17) ;
   DrawCornerDYDX(x1+5,y1,15,15,18) ;
+
+  DrawWater(x1,y1) ;
+end ;
+
+constructor TBlockLeftBottom.Create() ;
+var x,y:Byte ;
+begin
+  inherited Create() ;
+  SetLength(items,BLOCKSIZE) ;
+  SetLength(links,BLOCKSIZE-1) ;
+
+  for x:=0 to 11 do begin
+    items[x].filled:=False ;
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(x,y+8) ;
+    links[x]:=NewLink(x,x+1) ;
+  end ;
+
+  for x:=0 to 7 do begin
+    items[12+x].filled:=False ;
+    for y:=0 to 3 do
+      items[12+x].pixels[y]:=NewXY(y+8,12+x) ;
+    if x<7 then links[12+x]:=NewLink(12+x,12+x+1) ;
+  end ;
+  entry[-1,0]:=0 ;
+  entry[0,1]:=BLOCKSIZE-1 ;
 end ;
 
 procedure TBlockLeftBottom.Draw(x,y:Integer) ; 
@@ -396,6 +495,32 @@ begin
   DrawCornerDXDY(x1,y1+12,8,8,16) ;
   DrawCornerDXDY(x1,y1+13,7,7,17) ;
   DrawCornerDXDY(x1,y1+14,6,6,18) ;
+
+  DrawWater(x1,y1) ;
+end ;
+
+constructor TBlockRightBottom.Create() ;
+var x,y:Byte ;
+begin
+  inherited Create() ;
+  SetLength(items,BLOCKSIZE) ;
+  SetLength(links,BLOCKSIZE-1) ;
+
+  for x:=0 to 11 do begin
+    items[x].filled:=False ;
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(19-x,y+8) ;
+    links[x]:=NewLink(x,x+1) ;
+  end ;
+
+  for x:=0 to 7 do begin
+    items[12+x].filled:=False ;
+    for y:=0 to 3 do
+      items[12+x].pixels[y]:=NewXY(y+8,12+x) ;
+    if x<7 then links[12+x]:=NewLink(12+x,12+x+1) ;
+  end ;
+  entry[1,0]:=0 ;
+  entry[0,1]:=BLOCKSIZE-1 ;
 end ;
 
 procedure TBlockRightBottom.Draw(x,y:Integer) ; 
@@ -415,6 +540,8 @@ begin
   DrawCornerDXDY(x1+BLOCKSIZE-1,y1+12,-8,8,16) ;
   DrawCornerDXDY(x1+BLOCKSIZE-1,y1+13,-7,7,17) ;
   DrawCornerDXDY(x1+BLOCKSIZE-1,y1+14,-6,6,18) ;
+
+  DrawWater(x1,y1) ;
 end ;
 
 function TGame.genRandomPipeBlock():TBlock ;
@@ -475,10 +602,10 @@ begin
   map[8][1]:=TBlockFinish.Create() ;
   map[4][8]:=TBlockFinish.Create() ;
 
-  map[5][5]:=TBlockLeftTop.Create() ;
-  map[3][5]:=TBlockRightTop.Create() ;
-  map[5][3]:=TBlockLeftBottom.Create() ;
-  map[3][3]:=TBlockRightBottom.Create() ;
+  map[4][4]:=TBlockLeftBottom.Create() ;
+  map[4][6]:=TBlockLeftTop.Create() ;
+  map[2][6]:=TBlockRightBottom.Create() ;
+  map[2][8]:=TBlockRightTop.Create() ;
 
   tekblock:=genRandomPipeBlock() ;
   nextblock:=genRandomPipeBlock() ;
@@ -558,7 +685,7 @@ begin
   end ;
 
   Inc(ticks) ;
-  if ticks mod 3 = 0 then begin
+  if ticks mod 2 = 0 then begin
     p:=0 ;
     for i:=0 to MAPSIZE-1 do
       for j:=0 to MAPSIZE-1 do
