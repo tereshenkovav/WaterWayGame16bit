@@ -18,6 +18,12 @@ type
     i2:Byte ;
   end ;
 
+  TNewWater = record
+    i:Integer ;
+    j:Integer ;
+    idx:Integer ;
+  end ;
+
   TBlock = class
   protected
     items:array of TWaterItem ;
@@ -27,7 +33,9 @@ type
   public
     constructor Create() ; virtual ;
     function getItemIndexAtEntry(ex,ey:Smallint):Integer ;
-    procedure UpdateWater() ;
+    function isItemFilled(idx:Integer):Boolean ;
+    procedure fillItem(idx:Integer) ;
+    function UpdateWater():Boolean ;
     procedure Draw(x,y:Integer); virtual ; abstract ;
     function isEmpty():Boolean ; virtual ;
   end ;
@@ -55,6 +63,7 @@ type
   TBlockHorz = class(TBlock)
   private
   public
+    constructor Create() ; override ;
     procedure Draw(x,y:Integer); override ;
   end ;
 
@@ -97,6 +106,7 @@ type
     tekblock:TBlock ;
     nextblock:TBlock ;
     ticks:Cardinal ;
+    gameover:Boolean ;
     procedure DrawSelector() ;
     procedure ClearOldSelector() ;
     function genRandomPipeBlock():TBlock ;
@@ -106,10 +116,14 @@ type
     procedure Render() ;
     procedure RenderStatic() ;
     function Update():Boolean ;
+    function isGameOver():Boolean ;
   end ;
 
 implementation
 uses GameEngine16 ;
+
+const arr_ex:array[0..3] of Integer = (0,-1,0,1) ;
+      arr_ey:array[0..3] of Integer = (1,0,-1,0) ;
 
 const 
   BLOCKSIZE = 20 ;
@@ -145,13 +159,20 @@ begin
   Result.i2:=i2 ;
 end ;
 
+function NewWater(i,j,idx:Integer):TNewWater ;
+begin
+  Result.i:=i ;
+  Result.j:=j ;
+  Result.idx:=idx ;
+end ;
+
 constructor TBlock.Create() ;
 begin
   entry[-1,0]:=-1 ; entry[1,0]:=-1 ;
   entry[0,-1]:=-1 ; entry[0,1]:=-1 ;
 end ;
 
-procedure TBlock.UpdateWater() ;
+function TBlock.UpdateWater():Boolean ;
 var i,j,p:Integer ;
     newfilled:array[0..4] of Integer ;
 begin
@@ -166,6 +187,7 @@ begin
           end ;
   for i:=0 to p-1 do
     items[newfilled[i]].filled:=True ;
+  Result:=p>0 ;
 end ;
 
 procedure TBlock.DrawWater(x1,y1:Integer) ;
@@ -180,6 +202,16 @@ end ;
 function TBlock.getItemIndexAtEntry(ex,ey:Smallint):Integer ;
 begin
   Result:=entry[ex,ey] ;
+end ;
+
+function TBlock.isItemFilled(idx:Integer):Boolean ;
+begin
+  Result:=items[idx].filled ;
+end ;
+
+procedure TBlock.fillItem(idx:Integer) ;
+begin
+  items[idx].filled:=True ;
 end ;
 
 function TBlock.isEmpty():Boolean ; 
@@ -200,6 +232,7 @@ end ;
 constructor TBlockStartHorz.Create() ;
 var x,y:Byte ;
 begin
+  inherited Create() ;
   SetLength(items,7) ;
   SetLength(links,6) ;
   for x:=0 to 6 do begin
@@ -254,6 +287,22 @@ begin
   DrawLineVertByLen(x1+BLOCKSIZE-1,y1,BLOCKSIZE,9) ;
 end ;
 
+constructor TBlockHorz.Create() ;
+var x,y:Byte ;
+begin
+  inherited Create() ;
+  SetLength(items,BLOCKSIZE) ;
+  SetLength(links,BLOCKSIZE-1) ;
+  for x:=0 to BLOCKSIZE-1 do begin
+    items[x].filled:=False ;
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(x,y+8) ;
+    if x<BLOCKSIZE-1 then links[x]:=NewLink(x,x+1) ;
+  end ;
+  entry[-1,0]:=0 ;
+  entry[1,0]:=BLOCKSIZE-1 ;
+end ;
+
 procedure TBlockHorz.Draw(x,y:Integer) ; 
 var x1,y1,y2,yw:Integer ;
 begin
@@ -270,6 +319,8 @@ begin
   DrawLineHorzByLen(x1,BLOCKSIZE,y2-7,16) ;
   DrawLineHorzByLen(x1,BLOCKSIZE,y2-6,17) ;
   DrawLineHorzByLen(x1,BLOCKSIZE,y2-5,18) ;
+
+  DrawWater(x1,y1) ;
 end ;
 
 procedure TBlockVert.Draw(x,y:Integer) ; 
@@ -405,6 +456,7 @@ constructor TGame.Create() ;
 var i,j:Integer ;
 begin
   ticks:=0 ;
+  gameover:=False ;
 
   selx:=3 ; 
   sely:=5 ;
@@ -482,9 +534,13 @@ end ;
 
 function TGame.Update():Boolean ;
 var key,scan:Byte ;
-    i,j:Integer ;
+    i,j,e,newi,newj:Integer ;
+    p,idx,idx2:Integer ;
+    newfill:array[0..15] of TNewWater ;
 begin
   Result:=True ;
+  if gameover then Exit ;
+
   oldselx:=selx; oldsely:=sely ;
   if IsKeyPressed(key,scan) then begin
     //Writeln(key,scan) ;
@@ -502,10 +558,39 @@ begin
   end ;
 
   Inc(ticks) ;
-  if ticks mod 9 = 0 then 
+  if ticks mod 3 = 0 then begin
+    p:=0 ;
     for i:=0 to MAPSIZE-1 do
       for j:=0 to MAPSIZE-1 do
-        map[i][j].UpdateWater() ;
+        if map[i][j].UpdateWater() then begin
+         for e:=0 to 3 do begin
+          idx:=map[i][j].getItemIndexAtEntry(arr_ex[e],arr_ey[e]) ;
+          if idx<>-1 then 
+            if map[i][j].isItemFilled(idx) then begin
+              newi:=i+arr_ex[e] ; newj:=j+arr_ey[e] ; 
+              if (newi<0)or(newj<0)or(newi=MAPSIZE)or(newj=MAPSIZE) then begin
+                gameover:=True ; 
+                exit ;
+              end ;
+              if map[newi][newj].isEmpty() then begin
+                gameover:=True ; 
+                exit ;
+              end ;
+              idx2:=map[newi][newj].getItemIndexAtEntry(-arr_ex[e],-arr_ey[e]) ;
+              if idx2=-1 then begin 
+                gameover:=True ; 
+                exit ;
+              end ;
+              newfill[p]:=NewWater(newi,newj,idx2) ;
+              Inc(p) ;
+            end ;
+         end ;
+        end ;
+
+    for i:=0 to p-1 do
+      map[newfill[i].i][newfill[i].j].fillItem(newfill[i].idx) ;
+
+  end ;
 
   if ticks=5*18 then 
     for i:=0 to MAPSIZE-1 do
@@ -513,6 +598,11 @@ begin
         if map[i][j] is TBlockStartHorz then 
           TBlockStartHorz(map[i][j]).StartWater() ;
       end ;
+end ;
+
+function TGame.isGameOver():Boolean ;
+begin
+  Result:=gameover ;
 end ;
 
 end.

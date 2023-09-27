@@ -7,7 +7,7 @@ var
    tekframe:Word ;
    framen:Cardinal ;
    tekgame:TGame ;
-
+   key,scan:Byte ;
 begin
    Randomize() ;
 
@@ -35,6 +35,15 @@ begin
 
      if not tekgame.Update() then Break ;
      Inc(framen) ;
+
+     if tekgame.isGameOver() then begin
+       SetCursorXY(28,12) ; Write('Game over') ;
+       while True do begin
+         if IsKeyPressed(key,scan) then 
+           if scan=1 then Break ;
+       end ;
+       Break ;
+     end ;
 
      WaitFrameCompleted(tekframe) ;
    end ;
