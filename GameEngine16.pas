@@ -4,6 +4,7 @@ interface
 
 procedure Screen(num:Byte) ;
 procedure ClearScreen(color:Byte) ;  
+procedure DrawPixel(x,y:Word; color:Byte) ;
 procedure FillRect(x1,y1,w,h:Word; color:Byte) ;
 procedure DrawLineHorz(x1,x2,y:Word; color:Byte) ;
 procedure DrawLineHorzByLen(x1:Word; len:Integer; y:Word; color:Byte) ; 
@@ -41,6 +42,19 @@ asm
   mov cx,SCREENWIDTH*SCREENHEIGHT
   rep stosw
 end ; 
+
+procedure DrawPixel(x,y:Word; color:Byte) ;
+var pos:Word ;
+begin
+  pos:=SCREENWIDTH*y+x ;
+asm
+  mov ax,SegA000
+  mov es,ax
+  mov di,pos
+  mov al,color
+  stosb
+end ;
+end ;
 
 procedure FillRect(x1,y1,w,h:Word; color:Byte) ;
 var y:Integer ;

@@ -3,10 +3,31 @@ unit Game ;
 interface
 
 type
+  TXY = record
+    x:Byte ;
+    y:Byte ;
+  end ;
+  
+  TWaterItem = record
+    pixels:array[0..3] of TXY ;
+    filled:Boolean ;
+  end ;
+
+  TLink = record
+    i1:Byte ;
+    i2:Byte ;
+  end ;
+
   TBlock = class
   protected
-    filledv:Single ;
+    items:array of TWaterItem ;
+    links:array of TLink ;
+    entry:array[-1..1,-1..1] of Smallint ;
+    procedure DrawWater(x1,y1:Integer) ;
   public
+    constructor Create() ; virtual ;
+    function getItemIndexAtEntry(ex,ey:Smallint):Integer ;
+    procedure UpdateWater() ;
     procedure Draw(x,y:Integer); virtual ; abstract ;
     function isEmpty():Boolean ; virtual ;
   end ;
@@ -20,6 +41,8 @@ type
   TBlockStartHorz = class(TBlock)
   private
   public
+    constructor Create() ; override ;
+    procedure StartWater() ;
     procedure Draw(x,y:Integer); override ;
   end ;
 
@@ -73,6 +96,7 @@ type
     empty:TBlockEmpty ;
     tekblock:TBlock ;
     nextblock:TBlock ;
+    ticks:Cardinal ;
     procedure DrawSelector() ;
     procedure ClearOldSelector() ;
     function genRandomPipeBlock():TBlock ;
@@ -109,6 +133,55 @@ begin
   DrawLineHorzByLen(x1,dx,y1+dy-1,color) ;
 end ;
 
+function NewXY(x,y:Byte):TXY ;
+begin
+  Result.x:=x ;
+  Result.y:=y ;
+end ;
+
+function NewLink(i1,i2:Byte):TLink ;
+begin
+  Result.i1:=i1 ;
+  Result.i2:=i2 ;
+end ;
+
+constructor TBlock.Create() ;
+begin
+  entry[-1,0]:=-1 ; entry[1,0]:=-1 ;
+  entry[0,-1]:=-1 ; entry[0,1]:=-1 ;
+end ;
+
+procedure TBlock.UpdateWater() ;
+var i,j,p:Integer ;
+    newfilled:array[0..4] of Integer ;
+begin
+  p:=0 ;
+  for i:=0 to Length(items)-1 do
+    if not items[i].filled then
+      for j:=0 to Length(links)-1 do 
+        if (links[j].i1=i)or(links[j].i2=i) then
+          if items[links[j].i1].filled or items[links[j].i2].filled then begin
+            newfilled[p]:=i ;
+            Inc(p) ;
+          end ;
+  for i:=0 to p-1 do
+    items[newfilled[i]].filled:=True ;
+end ;
+
+procedure TBlock.DrawWater(x1,y1:Integer) ;
+var i,j:Integer ;
+begin
+  for i:=0 to Length(items) do 
+    if items[i].filled then 
+      for j:=0 to 3 do
+        DrawPixel(x1+items[i].pixels[j].x,y1+items[i].pixels[j].y,11) ;
+end ;
+
+function TBlock.getItemIndexAtEntry(ex,ey:Smallint):Integer ;
+begin
+  Result:=entry[ex,ey] ;
+end ;
+
 function TBlock.isEmpty():Boolean ; 
 begin
   Result:=False ;
@@ -122,6 +195,25 @@ end ;
 procedure TBlockEmpty.Draw(x,y:Integer) ; 
 begin
   FillRect(x*BLOCKSIZE,y*BLOCKSIZE,BLOCKSIZE,BLOCKSIZE,0) ;
+end ;
+
+constructor TBlockStartHorz.Create() ;
+var x,y:Byte ;
+begin
+  SetLength(items,7) ;
+  SetLength(links,6) ;
+  for x:=0 to 6 do begin
+    items[x].filled:=False ;
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(13 + x,y+8) ;
+    if x<6 then links[x]:=NewLink(x,x+1) ;
+  end ;
+  entry[1,0]:=6 ;
+end ;
+
+procedure TBlockStartHorz.StartWater() ;
+begin
+  items[0].filled:=True ;
 end ;
 
 procedure TBlockStartHorz.Draw(x,y:Integer) ; 
@@ -144,6 +236,8 @@ begin
   DrawLineVertByLen(x1+10,y1+6,8,18) ;
   DrawLineVertByLen(x1+11,y1+7,6,17) ;
   DrawLineVertByLen(x1+12,y1+8,4,16) ;
+
+  DrawWater(x1,y1) ;
 end ;
 
 procedure TBlockFinish.Draw(x,y:Integer) ; 
@@ -176,10 +270,6 @@ begin
   DrawLineHorzByLen(x1,BLOCKSIZE,y2-7,16) ;
   DrawLineHorzByLen(x1,BLOCKSIZE,y2-6,17) ;
   DrawLineHorzByLen(x1,BLOCKSIZE,y2-5,18) ;
-
-  if (filledv>0) then 
-    for yw:=y1+8 to y2-8 do
-      DrawLineHorzByLen(x1,BLOCKSIZE,yw,11) ;
 end ;
 
 procedure TBlockVert.Draw(x,y:Integer) ; 
@@ -198,10 +288,6 @@ begin
   DrawLineVertByLen(x2-7,y1,BLOCKSIZE,16) ;
   DrawLineVertByLen(x2-6,y1,BLOCKSIZE,17) ;
   DrawLineVertByLen(x2-5,y1,BLOCKSIZE,18) ;
-
-  if (filledv>0) then 
-    for xw:=x1+8 to x2-8 do
-      DrawLineVertByLen(xw,y1,BLOCKSIZE,11) ;
 end ;
 
 procedure TBlockLeftTop.Draw(x,y:Integer) ; 
@@ -318,6 +404,8 @@ end ;
 constructor TGame.Create() ;
 var i,j:Integer ;
 begin
+  ticks:=0 ;
+
   selx:=3 ; 
   sely:=5 ;
   oldselx:=-1; oldsely:=-1 ;
@@ -394,6 +482,7 @@ end ;
 
 function TGame.Update():Boolean ;
 var key,scan:Byte ;
+    i,j:Integer ;
 begin
   Result:=True ;
   oldselx:=selx; oldsely:=sely ;
@@ -411,6 +500,19 @@ begin
       end ;
     if scan=1 then Result:=False ;
   end ;
+
+  Inc(ticks) ;
+  if ticks mod 9 = 0 then 
+    for i:=0 to MAPSIZE-1 do
+      for j:=0 to MAPSIZE-1 do
+        map[i][j].UpdateWater() ;
+
+  if ticks=5*18 then 
+    for i:=0 to MAPSIZE-1 do
+      for j:=0 to MAPSIZE-1 do begin
+        if map[i][j] is TBlockStartHorz then 
+          TBlockStartHorz(map[i][j]).StartWater() ;
+      end ;
 end ;
 
 end.
