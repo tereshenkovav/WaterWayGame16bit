@@ -57,6 +57,7 @@ type
   TBlockFinish = class(TBlock)
   private
   public
+    constructor Create() ; override ;
     procedure Draw(x,y:Integer); override ;
   end ;
 
@@ -278,6 +279,17 @@ begin
   DrawWater(x1,y1) ;
 end ;
 
+constructor TBlockFinish.Create() ;
+begin
+  inherited Create() ;
+  SetLength(items,1) ;
+  items[0].filled:=False ;
+  entry[-1,0]:=0 ;
+  entry[1,0]:=0 ;
+  entry[0,-1]:=0 ;
+  entry[0,1]:=0 ;
+end ;
+
 procedure TBlockFinish.Draw(x,y:Integer) ; 
 var x1,y1:Integer ;
 begin
@@ -290,6 +302,8 @@ begin
   DrawLineHorzByLen(x1,BLOCKSIZE,y1+BLOCKSIZE-1,9) ;
   DrawLineVertByLen(x1,y1,BLOCKSIZE,9) ;
   DrawLineVertByLen(x1+BLOCKSIZE-1,y1,BLOCKSIZE,9) ;
+
+  if items[0].filled then FillRect(x1+1,y1+1,BLOCKSIZE-2,BLOCKSIZE-2,11) ;
 end ;
 
 constructor TBlockHorz.Create() ;
