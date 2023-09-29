@@ -12,7 +12,6 @@ type
   
   TWaterItem = record
     pixels:array[0..3] of TXY ;
-    filled:Boolean ;
   end ;
 
   TLink = record
@@ -26,15 +25,30 @@ type
     idx:Integer ;
   end ;
 
-  TBlock = class
-  protected
+  TBlockDescr = class
     items:array of TWaterItem ;    
     entry:array[-1..1,-1..1] of Smallint ;
     linktype:TLinkType ;
+    constructor Create() ;
+    constructor CreateNull() ;
+    constructor CreateStartHorz() ;
+    constructor CreateFinish() ;
+    constructor CreateHorz() ;
+    constructor CreateVert() ;
+    constructor CreateLeftTop() ;
+    constructor CreateRightTop() ;
+    constructor CreateLeftBottom() ;
+    constructor CreateRightBottom() ;
+  end ;
+
+  TBlock = class
+  protected
+    descr:TBlockDescr ;
+    filled:array of Boolean ;
     procedure DrawWater(x1,y1:Integer) ;
     function IsLinked(i1,i2:Integer):Boolean ; 
   public
-    constructor Create() ; virtual ;
+    constructor Create(Adescr:TBlockDescr) ; 
     function getItemIndexAtEntry(ex,ey:Smallint):Integer ;
     function isItemFilled(idx:Integer):Boolean ;
     procedure fillItem(idx:Integer) ;
@@ -45,6 +59,7 @@ type
 
   TBlockEmpty = class(TBlock)
   public
+    constructor Create() ; 
     procedure Draw(x,y:Integer); override ;
     function isEmpty():Boolean ; override ;
   end ;
@@ -52,7 +67,7 @@ type
   TBlockStartHorz = class(TBlock)
   private
   public
-    constructor Create() ; override ;
+    constructor Create() ;
     procedure StartWater() ;
     procedure Draw(x,y:Integer); override ;
   end ;
@@ -60,49 +75,49 @@ type
   TBlockFinish = class(TBlock)
   private
   public
-    constructor Create() ; override ;
+    constructor Create() ;
     procedure Draw(x,y:Integer); override ;
   end ;
 
   TBlockHorz = class(TBlock)
   private
   public
-    constructor Create() ; override ;
+    constructor Create() ; 
     procedure Draw(x,y:Integer); override ;
   end ;
 
   TBlockVert = class(TBlock)
   private
   public
-    constructor Create() ; override ;
+    constructor Create() ; 
     procedure Draw(x,y:Integer); override ;
   end ;
 
   TBlockLeftTop = class(TBlock)
   private
   public
-    constructor Create() ; override ;
+    constructor Create() ; 
     procedure Draw(x,y:Integer); override ;
   end ;
 
   TBlockRightTop = class(TBlock)
   private
   public
-    constructor Create() ; override ;
+    constructor Create() ; 
     procedure Draw(x,y:Integer); override ;
   end ;
 
   TBlockLeftBottom = class(TBlock)
   private
   public
-    constructor Create() ; override ;
+    constructor Create() ; 
     procedure Draw(x,y:Integer); override ;
   end ;
 
   TBlockRightBottom = class(TBlock)
   private
   public
-    constructor Create() ; override ;
+    constructor Create() ; 
     procedure Draw(x,y:Integer); override ;
   end ;
 
@@ -140,6 +155,9 @@ const
   SCREENW = 320 ;
   SCREENH = 200 ;
 
+var bdnull,bdstarthorz,bdfinish,bdhorz,bdvert,
+    bdlefttop,bdrighttop,bdleftbottom,bdrightbottom:TBlockDescr ;
+
 procedure DrawCornerDXDY(x1,y1,dx,dy:Integer; color:byte) ;
 var x2:Integer ;
 begin
@@ -175,16 +193,157 @@ begin
   Result.idx:=idx ;
 end ;
 
-constructor TBlock.Create() ;
+constructor TBlockDescr.Create() ;
 begin
   entry[-1,0]:=-1 ; entry[1,0]:=-1 ;
   entry[0,-1]:=-1 ; entry[0,1]:=-1 ;
 end ;
 
+constructor TBlockDescr.CreateFinish() ;
+begin
+  Create() ;
+  SetLength(items,1) ;
+  linktype:=ltLinear ;
+  entry[-1,0]:=0 ;
+  entry[1,0]:=0 ;
+  entry[0,-1]:=0 ;
+  entry[0,1]:=0 ;
+end ;
+
+constructor TBlockDescr.CreateNull() ;
+begin
+  Create() ;
+  SetLength(items,1) ;
+  linktype:=ltLinear ;
+end ;
+
+constructor TBlockDescr.CreateStartHorz() ;
+var x,y:Byte ;
+begin
+  Create() ;
+  linktype:=ltLinear ;
+  SetLength(items,7) ;
+  for x:=0 to 6 do 
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(13 + x,y+8) ;
+  entry[1,0]:=6 ;
+end ;
+
+constructor TBlockDescr.CreateHorz() ;
+var x,y:Byte ;
+begin
+  Create() ;
+  linktype:=ltLinear ;
+  SetLength(items,BLOCKSIZE) ;
+  for x:=0 to BLOCKSIZE-1 do
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(x,y+8) ;
+  entry[-1,0]:=0 ;
+  entry[1,0]:=BLOCKSIZE-1 ;
+end ;
+
+constructor TBlockDescr.CreateVert() ;
+var x,y:Byte ;
+begin
+  Create() ;
+  linktype:=ltLinear ;
+  SetLength(items,BLOCKSIZE) ;
+  for x:=0 to BLOCKSIZE-1 do
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(y+8,x) ;
+  entry[0,-1]:=0 ;
+  entry[0,1]:=BLOCKSIZE-1 ;
+end ;
+
+constructor TBlockDescr.CreateLeftTop() ;
+var x,y:Byte ;
+begin
+  Create() ;
+  linktype:=ltLinear ;
+  SetLength(items,BLOCKSIZE) ;
+
+  for x:=0 to 11 do
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(x,y+8) ;
+
+  for x:=0 to 7 do
+    for y:=0 to 3 do
+      items[12+x].pixels[y]:=NewXY(y+8,7-x) ;
+
+  entry[-1,0]:=0 ;
+  entry[0,-1]:=BLOCKSIZE-1 ;
+end ;
+
+constructor TBlockDescr.CreateRightTop() ;
+var x,y:Byte ;
+begin
+  Create() ;
+  linktype:=ltLinear ;
+  SetLength(items,BLOCKSIZE) ;
+
+  for x:=0 to 11 do
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(19-x,y+8) ;
+
+  for x:=0 to 7 do
+    for y:=0 to 3 do
+      items[12+x].pixels[y]:=NewXY(y+8,7-x) ;
+
+  entry[1,0]:=0 ;
+  entry[0,-1]:=BLOCKSIZE-1 ;
+end ;
+
+constructor TBlockDescr.CreateLeftBottom() ;
+var x,y:Byte ;
+begin
+  Create() ;
+  linktype:=ltLinear ;
+  SetLength(items,BLOCKSIZE) ;
+
+  for x:=0 to 11 do
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(x,y+8) ;
+
+  for x:=0 to 7 do
+    for y:=0 to 3 do
+      items[12+x].pixels[y]:=NewXY(y+8,12+x) ;
+
+  entry[-1,0]:=0 ;
+  entry[0,1]:=BLOCKSIZE-1 ;
+end ;
+
+constructor TBlockDescr.CreateRightBottom() ;
+var x,y:Byte ;
+begin
+  Create() ;
+  linktype:=ltLinear ;
+  SetLength(items,BLOCKSIZE) ;
+
+  for x:=0 to 11 do
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(19-x,y+8) ;
+
+  for x:=0 to 7 do
+    for y:=0 to 3 do
+      items[12+x].pixels[y]:=NewXY(y+8,12+x) ;
+
+  entry[1,0]:=0 ;
+  entry[0,1]:=BLOCKSIZE-1 ;
+end ;
+
+constructor TBlock.Create(Adescr:TBlockDescr) ;
+var i:Integer ;
+begin
+  descr:=Adescr ;
+  SetLength(filled,Length(descr.items)) ;
+  for i:=0 to Length(descr.items)-1 do
+    filled[i]:=False ;
+end ;
+
 function TBlock.IsLinked(i1,i2:Integer):Boolean ; 
 begin
   Result:=False ;
-  if linktype=ltLinear then Result:=(i2-i1=1)or(i2-i1=-1) ;
+  if descr.linktype=ltLinear then Result:=(i2-i1=1)or(i2-i1=-1) ;
 end ;
 
 function TBlock.UpdateWater():Boolean ;
@@ -192,46 +351,51 @@ var i,j,p:Integer ;
     newfilled:array[0..4] of Integer ;
 begin
   p:=0 ;
-  for i:=0 to Length(items)-1 do
-    if not items[i].filled then
-      for j:=0 to Length(items)-1 do 
+  for i:=0 to Length(filled)-1 do
+    if not filled[i] then
+      for j:=0 to Length(filled)-1 do 
         if isLinked(i,j) then
-          if items[j].filled then begin
+          if filled[j] then begin
             newfilled[p]:=i ;
             Inc(p) ;
           end ;
   for i:=0 to p-1 do
-    items[newfilled[i]].filled:=True ;
+    filled[newfilled[i]]:=True ;
   Result:=p>0 ;
 end ;
 
 procedure TBlock.DrawWater(x1,y1:Integer) ;
 var i,j:Integer ;
 begin
-  for i:=0 to Length(items)-1 do 
-    if items[i].filled then 
+  for i:=0 to Length(filled)-1 do 
+    if filled[i] then 
       for j:=0 to 3 do
-        DrawPixel(x1+items[i].pixels[j].x,y1+items[i].pixels[j].y,11) ;
+        DrawPixel(x1+descr.items[i].pixels[j].x,y1+descr.items[i].pixels[j].y,11) ;
 end ;
 
 function TBlock.getItemIndexAtEntry(ex,ey:Smallint):Integer ;
 begin
-  Result:=entry[ex,ey] ;
+  Result:=descr.entry[ex,ey] ;
 end ;
 
 function TBlock.isItemFilled(idx:Integer):Boolean ;
 begin
-  Result:=items[idx].filled ;
+  Result:=filled[idx] ;
 end ;
 
 procedure TBlock.fillItem(idx:Integer) ;
 begin
-  items[idx].filled:=True ;
+  filled[idx]:=True ;
 end ;
 
 function TBlock.isEmpty():Boolean ; 
 begin
   Result:=False ;
+end ;
+
+constructor TBlockEmpty.Create() ; 
+begin
+  inherited Create(bdnull) ;
 end ;
 
 function TBlockEmpty.isEmpty():Boolean ; 
@@ -245,22 +409,13 @@ begin
 end ;
 
 constructor TBlockStartHorz.Create() ;
-var x,y:Byte ;
 begin
-  inherited Create() ;
-  linktype:=ltLinear ;
-  SetLength(items,7) ;
-  for x:=0 to 6 do begin
-    items[x].filled:=False ;
-    for y:=0 to 3 do
-      items[x].pixels[y]:=NewXY(13 + x,y+8) ;
-  end ;
-  entry[1,0]:=6 ;
+  inherited Create(bdstarthorz) ;
 end ;
 
 procedure TBlockStartHorz.StartWater() ;
 begin
-  items[0].filled:=True ;
+  filled[0]:=True ;
 end ;
 
 procedure TBlockStartHorz.Draw(x,y:Integer) ; 
@@ -289,13 +444,7 @@ end ;
 
 constructor TBlockFinish.Create() ;
 begin
-  inherited Create() ;
-  SetLength(items,1) ;
-  items[0].filled:=False ;
-  entry[-1,0]:=0 ;
-  entry[1,0]:=0 ;
-  entry[0,-1]:=0 ;
-  entry[0,1]:=0 ;
+  inherited Create(bdfinish) ;
 end ;
 
 procedure TBlockFinish.Draw(x,y:Integer) ; 
@@ -311,22 +460,12 @@ begin
   DrawLineVertByLen(x1,y1,BLOCKSIZE,9) ;
   DrawLineVertByLen(x1+BLOCKSIZE-1,y1,BLOCKSIZE,9) ;
 
-  if items[0].filled then FillRect(x1+1,y1+1,BLOCKSIZE-2,BLOCKSIZE-2,11) ;
+  if filled[0] then FillRect(x1+1,y1+1,BLOCKSIZE-2,BLOCKSIZE-2,11) ;
 end ;
 
 constructor TBlockHorz.Create() ;
-var x,y:Byte ;
 begin
-  inherited Create() ;
-  linktype:=ltLinear ;
-  SetLength(items,BLOCKSIZE) ;
-  for x:=0 to BLOCKSIZE-1 do begin
-    items[x].filled:=False ;
-    for y:=0 to 3 do
-      items[x].pixels[y]:=NewXY(x,y+8) ;
-  end ;
-  entry[-1,0]:=0 ;
-  entry[1,0]:=BLOCKSIZE-1 ;
+  inherited Create(bdhorz) ;
 end ;
 
 procedure TBlockHorz.Draw(x,y:Integer) ; 
@@ -350,18 +489,8 @@ begin
 end ;
 
 constructor TBlockVert.Create() ;
-var x,y:Byte ;
 begin
-  inherited Create() ;
-  linktype:=ltLinear ;
-  SetLength(items,BLOCKSIZE) ;
-  for x:=0 to BLOCKSIZE-1 do begin
-    items[x].filled:=False ;
-    for y:=0 to 3 do
-      items[x].pixels[y]:=NewXY(y+8,x) ;
-  end ;
-  entry[0,-1]:=0 ;
-  entry[0,1]:=BLOCKSIZE-1 ;
+  inherited Create(bdvert) ;
 end ;
 
 procedure TBlockVert.Draw(x,y:Integer) ; 
@@ -385,25 +514,8 @@ begin
 end ;
 
 constructor TBlockLeftTop.Create() ;
-var x,y:Byte ;
 begin
-  inherited Create() ;
-  linktype:=ltLinear ;
-  SetLength(items,BLOCKSIZE) ;
-
-  for x:=0 to 11 do begin
-    items[x].filled:=False ;
-    for y:=0 to 3 do
-      items[x].pixels[y]:=NewXY(x,y+8) ;
-  end ;
-
-  for x:=0 to 7 do begin
-    items[12+x].filled:=False ;
-    for y:=0 to 3 do
-      items[12+x].pixels[y]:=NewXY(y+8,7-x) ;
-  end ;
-  entry[-1,0]:=0 ;
-  entry[0,-1]:=BLOCKSIZE-1 ;
+  inherited Create(bdlefttop) ;
 end ;
 
 procedure TBlockLeftTop.Draw(x,y:Integer) ; 
@@ -428,25 +540,8 @@ begin
 end ;
 
 constructor TBlockRightTop.Create() ;
-var x,y:Byte ;
 begin
-  inherited Create() ;
-  linktype:=ltLinear ;
-  SetLength(items,BLOCKSIZE) ;
-
-  for x:=0 to 11 do begin
-    items[x].filled:=False ;
-    for y:=0 to 3 do
-      items[x].pixels[y]:=NewXY(19-x,y+8) ;
-  end ;
-
-  for x:=0 to 7 do begin
-    items[12+x].filled:=False ;
-    for y:=0 to 3 do
-      items[12+x].pixels[y]:=NewXY(y+8,7-x) ;
-  end ;
-  entry[1,0]:=0 ;
-  entry[0,-1]:=BLOCKSIZE-1 ;
+  inherited Create(bdrighttop) ;
 end ;
 
 procedure TBlockRightTop.Draw(x,y:Integer) ; 
@@ -471,25 +566,8 @@ begin
 end ;
 
 constructor TBlockLeftBottom.Create() ;
-var x,y:Byte ;
 begin
-  inherited Create() ;
-  linktype:=ltLinear ;
-  SetLength(items,BLOCKSIZE) ;
-
-  for x:=0 to 11 do begin
-    items[x].filled:=False ;
-    for y:=0 to 3 do
-      items[x].pixels[y]:=NewXY(x,y+8) ;
-  end ;
-
-  for x:=0 to 7 do begin
-    items[12+x].filled:=False ;
-    for y:=0 to 3 do
-      items[12+x].pixels[y]:=NewXY(y+8,12+x) ;
-  end ;
-  entry[-1,0]:=0 ;
-  entry[0,1]:=BLOCKSIZE-1 ;
+  inherited Create(bdleftbottom) ;
 end ;
 
 procedure TBlockLeftBottom.Draw(x,y:Integer) ; 
@@ -514,25 +592,8 @@ begin
 end ;
 
 constructor TBlockRightBottom.Create() ;
-var x,y:Byte ;
 begin
-  inherited Create() ;
-  linktype:=ltLinear ;
-  SetLength(items,BLOCKSIZE) ;
-
-  for x:=0 to 11 do begin
-    items[x].filled:=False ;
-    for y:=0 to 3 do
-      items[x].pixels[y]:=NewXY(19-x,y+8) ;
-  end ;
-
-  for x:=0 to 7 do begin
-    items[12+x].filled:=False ;
-    for y:=0 to 3 do
-      items[12+x].pixels[y]:=NewXY(y+8,12+x) ;
-  end ;
-  entry[1,0]:=0 ;
-  entry[0,1]:=BLOCKSIZE-1 ;
+  inherited Create(bdrightbottom) ;
 end ;
 
 procedure TBlockRightBottom.Draw(x,y:Integer) ; 
@@ -743,5 +804,29 @@ function TGame.isGameOver():Boolean ;
 begin
   Result:=gameover ;
 end ;
+
+initialization
+
+bdstarthorz:=TBlockDescr.CreateStartHorz() ;
+bdfinish:=TBlockDescr.CreateFinish() ;
+bdhorz:=TBlockDescr.CreateHorz() ;
+bdvert:=TBlockDescr.CreateVert() ;
+bdlefttop:=TBlockDescr.CreateLeftTop() ;
+bdrighttop:=TBlockDescr.CreateRightTop() ;
+bdleftbottom:=TBlockDescr.CreateLeftBottom() ;
+bdrightbottom:=TBlockDescr.CreateRightBottom() ;
+bdnull:=TBlockDescr.CreateNull() ;
+
+finalization
+
+bdstarthorz.Free ;
+bdfinish.Free ;
+bdhorz.Free ;
+bdvert.Free ;
+bdlefttop.Free ;
+bdrighttop.Free ;
+bdleftbottom.Free ;
+bdrightbottom.Free ;
+bdnull.Free ;
 
 end.
