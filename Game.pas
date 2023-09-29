@@ -3,6 +3,8 @@ unit Game ;
 interface
 
 type
+  TLinkType = (ltLinear) ;
+
   TXY = record
     x:Byte ;
     y:Byte ;
@@ -26,10 +28,11 @@ type
 
   TBlock = class
   protected
-    items:array of TWaterItem ;
-    links:array of TLink ;
+    items:array of TWaterItem ;    
     entry:array[-1..1,-1..1] of Smallint ;
+    linktype:TLinkType ;
     procedure DrawWater(x1,y1:Integer) ;
+    function IsLinked(i1,i2:Integer):Boolean ; 
   public
     constructor Create() ; virtual ;
     function getItemIndexAtEntry(ex,ey:Smallint):Integer ;
@@ -178,6 +181,12 @@ begin
   entry[0,-1]:=-1 ; entry[0,1]:=-1 ;
 end ;
 
+function TBlock.IsLinked(i1,i2:Integer):Boolean ; 
+begin
+  Result:=False ;
+  if linktype=ltLinear then Result:=(i2-i1=1)or(i2-i1=-1) ;
+end ;
+
 function TBlock.UpdateWater():Boolean ;
 var i,j,p:Integer ;
     newfilled:array[0..4] of Integer ;
@@ -185,9 +194,9 @@ begin
   p:=0 ;
   for i:=0 to Length(items)-1 do
     if not items[i].filled then
-      for j:=0 to Length(links)-1 do 
-        if (links[j].i1=i)or(links[j].i2=i) then
-          if items[links[j].i1].filled or items[links[j].i2].filled then begin
+      for j:=0 to Length(items)-1 do 
+        if isLinked(i,j) then
+          if items[j].filled then begin
             newfilled[p]:=i ;
             Inc(p) ;
           end ;
@@ -199,7 +208,7 @@ end ;
 procedure TBlock.DrawWater(x1,y1:Integer) ;
 var i,j:Integer ;
 begin
-  for i:=0 to Length(items) do 
+  for i:=0 to Length(items)-1 do 
     if items[i].filled then 
       for j:=0 to 3 do
         DrawPixel(x1+items[i].pixels[j].x,y1+items[i].pixels[j].y,11) ;
@@ -239,13 +248,12 @@ constructor TBlockStartHorz.Create() ;
 var x,y:Byte ;
 begin
   inherited Create() ;
+  linktype:=ltLinear ;
   SetLength(items,7) ;
-  SetLength(links,6) ;
   for x:=0 to 6 do begin
     items[x].filled:=False ;
     for y:=0 to 3 do
       items[x].pixels[y]:=NewXY(13 + x,y+8) ;
-    if x<6 then links[x]:=NewLink(x,x+1) ;
   end ;
   entry[1,0]:=6 ;
 end ;
@@ -310,13 +318,12 @@ constructor TBlockHorz.Create() ;
 var x,y:Byte ;
 begin
   inherited Create() ;
+  linktype:=ltLinear ;
   SetLength(items,BLOCKSIZE) ;
-  SetLength(links,BLOCKSIZE-1) ;
   for x:=0 to BLOCKSIZE-1 do begin
     items[x].filled:=False ;
     for y:=0 to 3 do
       items[x].pixels[y]:=NewXY(x,y+8) ;
-    if x<BLOCKSIZE-1 then links[x]:=NewLink(x,x+1) ;
   end ;
   entry[-1,0]:=0 ;
   entry[1,0]:=BLOCKSIZE-1 ;
@@ -346,13 +353,12 @@ constructor TBlockVert.Create() ;
 var x,y:Byte ;
 begin
   inherited Create() ;
+  linktype:=ltLinear ;
   SetLength(items,BLOCKSIZE) ;
-  SetLength(links,BLOCKSIZE-1) ;
   for x:=0 to BLOCKSIZE-1 do begin
     items[x].filled:=False ;
     for y:=0 to 3 do
       items[x].pixels[y]:=NewXY(y+8,x) ;
-    if x<BLOCKSIZE-1 then links[x]:=NewLink(x,x+1) ;
   end ;
   entry[0,-1]:=0 ;
   entry[0,1]:=BLOCKSIZE-1 ;
@@ -382,21 +388,19 @@ constructor TBlockLeftTop.Create() ;
 var x,y:Byte ;
 begin
   inherited Create() ;
+  linktype:=ltLinear ;
   SetLength(items,BLOCKSIZE) ;
-  SetLength(links,BLOCKSIZE-1) ;
 
   for x:=0 to 11 do begin
     items[x].filled:=False ;
     for y:=0 to 3 do
       items[x].pixels[y]:=NewXY(x,y+8) ;
-    links[x]:=NewLink(x,x+1) ;
   end ;
 
   for x:=0 to 7 do begin
     items[12+x].filled:=False ;
     for y:=0 to 3 do
       items[12+x].pixels[y]:=NewXY(y+8,7-x) ;
-    if x<7 then links[12+x]:=NewLink(12+x,12+x+1) ;
   end ;
   entry[-1,0]:=0 ;
   entry[0,-1]:=BLOCKSIZE-1 ;
@@ -427,21 +431,19 @@ constructor TBlockRightTop.Create() ;
 var x,y:Byte ;
 begin
   inherited Create() ;
+  linktype:=ltLinear ;
   SetLength(items,BLOCKSIZE) ;
-  SetLength(links,BLOCKSIZE-1) ;
 
   for x:=0 to 11 do begin
     items[x].filled:=False ;
     for y:=0 to 3 do
       items[x].pixels[y]:=NewXY(19-x,y+8) ;
-    links[x]:=NewLink(x,x+1) ;
   end ;
 
   for x:=0 to 7 do begin
     items[12+x].filled:=False ;
     for y:=0 to 3 do
       items[12+x].pixels[y]:=NewXY(y+8,7-x) ;
-    if x<7 then links[12+x]:=NewLink(12+x,12+x+1) ;
   end ;
   entry[1,0]:=0 ;
   entry[0,-1]:=BLOCKSIZE-1 ;
@@ -472,21 +474,19 @@ constructor TBlockLeftBottom.Create() ;
 var x,y:Byte ;
 begin
   inherited Create() ;
+  linktype:=ltLinear ;
   SetLength(items,BLOCKSIZE) ;
-  SetLength(links,BLOCKSIZE-1) ;
 
   for x:=0 to 11 do begin
     items[x].filled:=False ;
     for y:=0 to 3 do
       items[x].pixels[y]:=NewXY(x,y+8) ;
-    links[x]:=NewLink(x,x+1) ;
   end ;
 
   for x:=0 to 7 do begin
     items[12+x].filled:=False ;
     for y:=0 to 3 do
       items[12+x].pixels[y]:=NewXY(y+8,12+x) ;
-    if x<7 then links[12+x]:=NewLink(12+x,12+x+1) ;
   end ;
   entry[-1,0]:=0 ;
   entry[0,1]:=BLOCKSIZE-1 ;
@@ -517,21 +517,19 @@ constructor TBlockRightBottom.Create() ;
 var x,y:Byte ;
 begin
   inherited Create() ;
+  linktype:=ltLinear ;
   SetLength(items,BLOCKSIZE) ;
-  SetLength(links,BLOCKSIZE-1) ;
 
   for x:=0 to 11 do begin
     items[x].filled:=False ;
     for y:=0 to 3 do
       items[x].pixels[y]:=NewXY(19-x,y+8) ;
-    links[x]:=NewLink(x,x+1) ;
   end ;
 
   for x:=0 to 7 do begin
     items[12+x].filled:=False ;
     for y:=0 to 3 do
       items[12+x].pixels[y]:=NewXY(y+8,12+x) ;
-    if x<7 then links[12+x]:=NewLink(12+x,12+x+1) ;
   end ;
   entry[1,0]:=0 ;
   entry[0,1]:=BLOCKSIZE-1 ;
