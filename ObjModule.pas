@@ -10,6 +10,7 @@ const arr_ex:array[0..3] of Integer = (0,-1,0,1) ;
       MAPSIZE = 10 ;
       SCREENW = 320 ;
       SCREENH = 200 ;
+      TICKSINSEC = 18 ;
 
 var bdnull,bdstarthorz,bdstartvert,bdfinish,bdhorz,bdvert,
     bdlefttop,bdrighttop,bdleftbottom,bdrightbottom:TBlockDescr ;

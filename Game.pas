@@ -14,6 +14,7 @@ type
     nextblock:TBlock ;
     ticks:Cardinal ;
     state:TGameState ;
+    startleft:Integer ;
     procedure DrawSelector() ;
     procedure ClearOldSelector() ;
     function genRandomPipeBlock():TBlock ;
@@ -71,6 +72,7 @@ begin
   ticks:=0 ;
   state:=gsNormal ;
 
+  startleft:=TICKSINSEC*5 ; // 5 секунд до старта
   selx:=3 ; 
   sely:=5 ;
   oldselx:=-1; oldsely:=-1 ;
@@ -222,12 +224,16 @@ begin
 
   end ;
 
-  if ticks=5*18 then 
-    for i:=0 to MAPSIZE-1 do
-      for j:=0 to MAPSIZE-1 do begin
-        if (map[i][j] is TBlockStartHorz)or(map[i][j] is TBlockStartVert) then
-          map[i][j].StartWater() ;
-      end ;
+  if startleft>0 then begin
+    Dec(startleft) ;
+    SetCursorXY(26,12) ; 
+    if startleft>0 then Write('Water in ',startleft div TICKSINSEC + 1) else Write('          ') ;
+    if startleft<=0 then 
+      for i:=0 to MAPSIZE-1 do
+        for j:=0 to MAPSIZE-1 do 
+          if (map[i][j] is TBlockStartHorz)or(map[i][j] is TBlockStartVert) then
+            map[i][j].StartWater() ;
+  end ;
 end ;
 
 function TGame.isGameOver():Boolean ;
