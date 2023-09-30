@@ -12,6 +12,7 @@ type
     constructor Create() ;
     constructor CreateNull() ;
     constructor CreateStartHorz() ;
+    constructor CreateStartVert() ;
     constructor CreateFinish() ;
     constructor CreateHorz() ;
     constructor CreateVert() ;
@@ -58,6 +59,18 @@ begin
     for y:=0 to 3 do
       items[x].pixels[y]:=NewXY(13 + x,y+8) ;
   entry[1,0]:=6 ;
+end ;
+
+constructor TBlockDescr.CreateStartVert() ;
+var x,y:Byte ;
+begin
+  Create() ;
+  linktype:=ltLinear ;
+  SetLength(items,7) ;
+  for x:=0 to 6 do 
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(y+8,13+x) ;
+  entry[0,1]:=6 ;
 end ;
 
 constructor TBlockDescr.CreateHorz() ;

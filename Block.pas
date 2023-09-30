@@ -15,6 +15,7 @@ type
     function getItemIndexAtEntry(ex,ey:Smallint):Integer ;
     function isItemFilled(idx:Integer):Boolean ;
     procedure fillItem(idx:Integer) ;
+    procedure StartWater() ; // Просто обертка для удобства
     function UpdateWater():Boolean ;
     procedure Draw(x,y:Integer); virtual ; abstract ;
     function isEmpty():Boolean ; virtual ;
@@ -37,7 +38,13 @@ type
   private
   public
     constructor Create() ;
-    procedure StartWater() ;
+    procedure Draw(x,y:Integer); override ;
+  end ;
+
+  TBlockStartVert = class(TBlock)
+  private
+  public
+    constructor Create() ;
     procedure Draw(x,y:Integer); override ;
   end ;
 
@@ -155,6 +162,11 @@ begin
   Result:=False ;
 end ;
 
+procedure TBlock.StartWater() ;
+begin
+  if Length(filled)>0 then filled[0]:=True ;
+end ;
+
 constructor TBlockEmpty.Create() ; 
 begin
   inherited Create(bdnull) ;
@@ -191,11 +203,6 @@ begin
   inherited Create(bdstarthorz) ;
 end ;
 
-procedure TBlockStartHorz.StartWater() ;
-begin
-  filled[0]:=True ;
-end ;
-
 procedure TBlockStartHorz.Draw(x,y:Integer) ; 
 var x1,y1,y2,yw:Integer ;
 begin
@@ -216,6 +223,35 @@ begin
   DrawLineVertByLen(x1+10,y1+6,8,18) ;
   DrawLineVertByLen(x1+11,y1+7,6,17) ;
   DrawLineVertByLen(x1+12,y1+8,4,16) ;
+
+  DrawWater(x1,y1) ;
+end ;
+
+constructor TBlockStartVert.Create() ;
+begin
+  inherited Create(bdstartvert) ;
+end ;
+
+procedure TBlockStartVert.Draw(x,y:Integer) ; 
+var x1,y1,x2:Integer ;
+begin
+  x1:=x*BLOCKSIZE ;
+  y1:=y*BLOCKSIZE ;
+  x2:=x*BLOCKSIZE+BLOCKSIZE-1 ;
+
+  FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
+
+  DrawLineVertByLen(x1+5,y1+BLOCKSIZE div 2,BLOCKSIZE div 2,18) ;
+  DrawLineVertByLen(x1+6,y1+BLOCKSIZE div 2,BLOCKSIZE div 2,17) ;
+  DrawLineVertByLen(x1+7,y1+BLOCKSIZE div 2,BLOCKSIZE div 2,16) ;
+
+  DrawLineVertByLen(x2-7,y1+BLOCKSIZE div 2,BLOCKSIZE div 2,16) ;
+  DrawLineVertByLen(x2-6,y1+BLOCKSIZE div 2,BLOCKSIZE div 2,17) ;
+  DrawLineVertByLen(x2-5,y1+BLOCKSIZE div 2,BLOCKSIZE div 2,18) ;
+
+  DrawLineHorzByLen(x1+6,8,y1+10,18) ;
+  DrawLineHorzByLen(x1+7,6,y1+11,17) ;
+  DrawLineHorzByLen(x1+8,4,y1+12,16) ;
 
   DrawWater(x1,y1) ;
 end ;

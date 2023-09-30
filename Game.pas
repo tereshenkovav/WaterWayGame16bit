@@ -83,8 +83,9 @@ begin
 
   // level conf
   map[2][4]:=TBlockStartHorz.Create() ;
+  map[8][2]:=TBlockStartVert.Create() ;
 
-  map[8][1]:=TBlockFinish.Create() ;
+  map[8][4]:=TBlockFinish.Create() ;
   map[4][8]:=TBlockFinish.Create() ;
 
   map[4][4]:=TBlockLeftBottom.Create() ;
@@ -209,8 +210,8 @@ begin
   if ticks=5*18 then 
     for i:=0 to MAPSIZE-1 do
       for j:=0 to MAPSIZE-1 do begin
-        if map[i][j] is TBlockStartHorz then 
-          TBlockStartHorz(map[i][j]).StartWater() ;
+        if (map[i][j] is TBlockStartHorz)or(map[i][j] is TBlockStartVert) then
+          map[i][j].StartWater() ;
       end ;
 end ;
 

@@ -11,7 +11,7 @@ const arr_ex:array[0..3] of Integer = (0,-1,0,1) ;
       SCREENW = 320 ;
       SCREENH = 200 ;
 
-var bdnull,bdstarthorz,bdfinish,bdhorz,bdvert,
+var bdnull,bdstarthorz,bdstartvert,bdfinish,bdhorz,bdvert,
     bdlefttop,bdrighttop,bdleftbottom,bdrightbottom:TBlockDescr ;
 
 implementation
@@ -19,6 +19,7 @@ implementation
 initialization
 
 bdstarthorz:=TBlockDescr.CreateStartHorz() ;
+bdstartvert:=TBlockDescr.CreateStartVert() ;
 bdfinish:=TBlockDescr.CreateFinish() ;
 bdhorz:=TBlockDescr.CreateHorz() ;
 bdvert:=TBlockDescr.CreateVert() ;
@@ -31,6 +32,7 @@ bdnull:=TBlockDescr.CreateNull() ;
 finalization
 
 bdstarthorz.Free ;
+bdstartvert.Free ;
 bdfinish.Free ;
 bdhorz.Free ;
 bdvert.Free ;
