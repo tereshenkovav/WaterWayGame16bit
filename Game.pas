@@ -37,9 +37,13 @@ uses ObjModule, GameEngine16 ;
 function TGame.genRandomPipeBlock():TBlock ;
 var r:Integer ;
 begin
-  r:=Random(2) ;
+  r:=Random(6) ;
   if r=0 then Result:=TBlockHorz.Create() ;
   if r=1 then Result:=TBlockVert.Create() ;
+  if r=2 then Result:=TBlockLeftTop.Create() ;
+  if r=3 then Result:=TBlockRightTop.Create() ;
+  if r=4 then Result:=TBlockLeftBottom.Create() ;
+  if r=5 then Result:=TBlockRightBottom.Create() ;
 end ;
 
 procedure TGame.ClearOldSelector() ;
@@ -77,7 +81,7 @@ begin
   ticks:=0 ;
   state:=gsNormal ;
 
-  startleft:=TICKSINSEC*5 ; // 5 секунд до старта
+  startleft:=TICKSINSEC*19 ; // 20 секунд до старта
   selx:=3 ; 
   sely:=5 ;
   oldselx:=-1; oldsely:=-1 ;
@@ -90,18 +94,17 @@ begin
       map[i][j]:=empty ;
 
   // level conf
-  map[2][4]:=TBlockStartHorz.Create() ;
-  map[8][2]:=TBlockStartVert.Create() ;
+  map[1][3]:=TBlockStartHorz.Create() ;
+  map[3][1]:=TBlockStartVert.Create() ;
 
-  map[8][4]:=TBlockFinish.Create() ;
-  map[4][8]:=TBlockFinish.Create() ;
+  map[8][6]:=TBlockFinish.Create() ;
+  map[6][8]:=TBlockFinish.Create() ;
 
-  map[4][4]:=TBlockLeftBottom.Create() ;
-  map[4][6]:=TBlockLeftTop.Create() ;
-  map[2][6]:=TBlockRightBottom.Create() ;
-  map[2][8]:=TBlockRightTop.Create() ;
+  map[2][7]:=TBlockWall.Create() ;
+  map[7][2]:=TBlockWall.Create() ;
 
-  map[8][8]:=TBlockWall.Create() ;
+  map[5][4]:=TBlockWall.Create() ;
+  map[4][5]:=TBlockWall.Create() ;
 
   tekblock:=genRandomPipeBlock() ;
   nextblock:=genRandomPipeBlock() ;
@@ -195,7 +198,7 @@ begin
   end ;
 
   Inc(ticks) ;
-  if ticks mod 2 = 0 then begin
+  if ticks mod 9 = 0 then begin
     p:=0 ;
     for i:=0 to MAPSIZE-1 do
       for j:=0 to MAPSIZE-1 do
@@ -232,7 +235,7 @@ begin
   if startleft>0 then begin
     Dec(startleft) ;
     SetCursorXY(26,12) ; 
-    if startleft>0 then Write('Water in ',startleft div TICKSINSEC + 1) else Write('          ') ;
+    if startleft>0 then Write('Water in ',startleft div TICKSINSEC + 1,' ') else Write('           ') ;
     if (startleft<=TICKSINSEC) and (not startbeep) then begin
       beep:=True ;
       startbeep:=True ;
