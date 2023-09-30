@@ -27,6 +27,12 @@ type
     function isEmpty():Boolean ; override ;
   end ;
 
+  TBlockWall = class(TBlock)
+  public
+    constructor Create() ; 
+    procedure Draw(x,y:Integer); override ;
+  end ;
+
   TBlockStartHorz = class(TBlock)
   private
   public
@@ -162,6 +168,22 @@ end ;
 procedure TBlockEmpty.Draw(x,y:Integer) ; 
 begin
   FillRect(x*BLOCKSIZE,y*BLOCKSIZE,BLOCKSIZE,BLOCKSIZE,0) ;
+end ;
+
+constructor TBlockWall.Create() ; 
+begin
+  inherited Create(bdnull) ;
+end ;
+
+procedure TBlockWall.Draw(x,y:Integer) ; 
+var x1,y1:Integer ;
+begin
+  x1:=x*BLOCKSIZE ;
+  y1:=y*BLOCKSIZE ;
+
+  FillRect(x1+2,y1+2,BLOCKSIZE-4,BLOCKSIZE-4,16) ;
+  FillRect(x1+4,y1+4,BLOCKSIZE-8,BLOCKSIZE-8,17) ;
+  FillRect(x1+6,y1+6,BLOCKSIZE-12,BLOCKSIZE-12,18) ;
 end ;
 
 constructor TBlockStartHorz.Create() ;

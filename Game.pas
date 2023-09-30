@@ -92,6 +92,8 @@ begin
   map[2][6]:=TBlockRightBottom.Create() ;
   map[2][8]:=TBlockRightTop.Create() ;
 
+  map[8][8]:=TBlockWall.Create() ;
+
   tekblock:=genRandomPipeBlock() ;
   nextblock:=genRandomPipeBlock() ;
 end ;
