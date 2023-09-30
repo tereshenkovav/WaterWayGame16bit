@@ -38,6 +38,8 @@ begin
 
      if tekgame.isGameOver() then begin
        SetCursorXY(28,12) ; Write('Game over') ;
+       SetCursorXY(28,13) ;
+       if tekgame.isWin() then Write('You winner!') else Write('You failed!') ;
        while True do begin
          if IsKeyPressed(key,scan) then 
            if scan=1 then Break ;

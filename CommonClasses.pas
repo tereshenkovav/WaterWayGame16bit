@@ -5,6 +5,8 @@ interface
 type
   TLinkType = (ltLinear) ;
 
+  TGameState = (gsNormal,gsWin,gsFail) ;
+
   TXY = record
     x:Byte ;
     y:Byte ;

@@ -52,6 +52,7 @@ type
   private
   public
     constructor Create() ;
+    function isFilled():Boolean ;
     procedure Draw(x,y:Integer); override ;
   end ;
 
@@ -259,6 +260,11 @@ end ;
 constructor TBlockFinish.Create() ;
 begin
   inherited Create(bdfinish) ;
+end ;
+
+function TBlockFinish.isFilled():Boolean ;
+begin
+  Result:=filled[0] ;
 end ;
 
 procedure TBlockFinish.Draw(x,y:Integer) ; 

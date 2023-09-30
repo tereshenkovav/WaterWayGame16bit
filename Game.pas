@@ -1,7 +1,7 @@
 unit Game ;
 
 interface
-uses Block ;
+uses Block, CommonClasses ;
 
 type
   TGame = class
@@ -13,7 +13,7 @@ type
     tekblock:TBlock ;
     nextblock:TBlock ;
     ticks:Cardinal ;
-    gameover:Boolean ;
+    state:TGameState ;
     procedure DrawSelector() ;
     procedure ClearOldSelector() ;
     function genRandomPipeBlock():TBlock ;
@@ -24,10 +24,11 @@ type
     procedure RenderStatic() ;
     function Update():Boolean ;
     function isGameOver():Boolean ;
+    function isWin():Boolean ;
   end ;
 
 implementation
-uses ObjModule, CommonClasses, GameEngine16 ;
+uses ObjModule, GameEngine16 ;
 
 function TGame.genRandomPipeBlock():TBlock ;
 var r:Integer ;
@@ -68,7 +69,7 @@ constructor TGame.Create() ;
 var i,j:Integer ;
 begin
   ticks:=0 ;
-  gameover:=False ;
+  state:=gsNormal ;
 
   selx:=3 ; 
   sely:=5 ;
@@ -152,9 +153,10 @@ var key,scan:Byte ;
     i,j,e,newi,newj:Integer ;
     p,idx,idx2:Integer ;
     newfill:array[0..15] of TNewWater ;
+    cnt,cntfilled:Integer ;
 begin
   Result:=True ;
-  if gameover then Exit ;
+  if state<>gsNormal then Exit ;
 
   oldselx:=selx; oldsely:=sely ;
   if IsKeyPressed(key,scan) then begin
@@ -172,6 +174,19 @@ begin
     if scan=1 then Result:=False ;
   end ;
 
+  cntfilled:=0 ;
+  cnt:=0 ;
+  for i:=0 to MAPSIZE-1 do
+    for j:=0 to MAPSIZE-1 do
+      if map[i][j] is TBlockFinish then begin
+        Inc(cnt) ; 
+        if TBlockFinish(map[i][j]).isFilled() then Inc(cntfilled) ;
+      end ;
+  if cntfilled=cnt then begin
+    state:=gsWin ; 
+    exit ;
+  end ;
+
   Inc(ticks) ;
   if ticks mod 2 = 0 then begin
     p:=0 ;
@@ -184,16 +199,16 @@ begin
             if map[i][j].isItemFilled(idx) then begin
               newi:=i+arr_ex[e] ; newj:=j+arr_ey[e] ; 
               if (newi<0)or(newj<0)or(newi=MAPSIZE)or(newj=MAPSIZE) then begin
-                gameover:=True ; 
+                state:=gsFail ; 
                 exit ;
               end ;
               if map[newi][newj].isEmpty() then begin
-                gameover:=True ; 
+                state:=gsFail ; 
                 exit ;
               end ;
               idx2:=map[newi][newj].getItemIndexAtEntry(-arr_ex[e],-arr_ey[e]) ;
               if idx2=-1 then begin 
-                gameover:=True ; 
+                state:=gsFail ; 
                 exit ;
               end ;
               newfill[p]:=NewWater(newi,newj,idx2) ;
@@ -217,7 +232,12 @@ end ;
 
 function TGame.isGameOver():Boolean ;
 begin
-  Result:=gameover ;
+  Result:=state<>gsNormal ;
+end ;
+
+function TGame.isWin():Boolean ;
+begin
+  Result:=state=gsWin ;
 end ;
 
 end.
