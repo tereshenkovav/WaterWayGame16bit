@@ -15,6 +15,8 @@ type
     ticks:Cardinal ;
     state:TGameState ;
     startleft:Integer ;
+    beep:Boolean ;
+    startbeep:Boolean ;
     procedure DrawSelector() ;
     procedure ClearOldSelector() ;
     function genRandomPipeBlock():TBlock ;
@@ -26,6 +28,7 @@ type
     function Update():Boolean ;
     function isGameOver():Boolean ;
     function isWin():Boolean ;
+    function isBeepEmitted():Boolean ;
   end ;
 
 implementation
@@ -69,6 +72,8 @@ end ;
 constructor TGame.Create() ;
 var i,j:Integer ;
 begin
+  beep:=False ;
+  startbeep:=False ;
   ticks:=0 ;
   state:=gsNormal ;
 
@@ -228,7 +233,11 @@ begin
     Dec(startleft) ;
     SetCursorXY(26,12) ; 
     if startleft>0 then Write('Water in ',startleft div TICKSINSEC + 1) else Write('          ') ;
-    if startleft<=0 then 
+    if (startleft<=TICKSINSEC) and (not startbeep) then begin
+      beep:=True ;
+      startbeep:=True ;
+    end ;
+    if startleft<=0 then
       for i:=0 to MAPSIZE-1 do
         for j:=0 to MAPSIZE-1 do 
           if (map[i][j] is TBlockStartHorz)or(map[i][j] is TBlockStartVert) then
@@ -244,6 +253,12 @@ end ;
 function TGame.isWin():Boolean ;
 begin
   Result:=state=gsWin ;
+end ;
+
+function TGame.isBeepEmitted():Boolean ;
+begin
+  Result:=beep ;
+  beep:=False ;
 end ;
 
 end.

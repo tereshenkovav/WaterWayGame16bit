@@ -1,11 +1,11 @@
 program WaterWay ;
 
-uses GameEngine16, Game ;
+uses GameEngine16, Game, ObjModule ;
 
 var
    pal:array[0..29] of byte ;
    tekframe:Word ;
-   framen:Cardinal ;
+   soundlen:Integer ;
    tekgame:TGame ;
    key,scan:Byte ;
 begin
@@ -20,21 +20,27 @@ begin
    pal[6]:=40 ; pal[7]:=40 ; pal[8]:=40 ;
    SetPaletteData(16,3,pal) ;
 
-   SoundOn() ;
-   SoundFreq(1000) ;
- 
-   framen:=0 ;
+   soundlen:=0 ;
    ClearScreen(0) ;
+   SoundOff() ;
    tekgame.RenderStatic() ;
    while true do begin
      tekframe:=StartFrame() ;
 
      tekgame.Render() ;
 
-     if framen = 18 then SoundOff() ;
-
      if not tekgame.Update() then Break ;
-     Inc(framen) ;
+
+     if tekgame.isBeepEmitted() then begin
+       SoundOn() ;
+       SoundFreq(1000) ;
+       soundlen:=TICKSINSEC ;
+     end ;
+
+     if soundlen>0 then begin
+       Dec(soundlen) ;
+       if soundlen<=0 then SoundOff() ;
+     end ;
 
      if tekgame.isGameOver() then begin
        SetCursorXY(28,12) ; Write('Game over') ;
@@ -51,6 +57,7 @@ begin
    end ;
   
    Screen($3) ;
+   SoundOff() ;
    Writeln(MemAvail()) ;
    tekgame.Free ;
 end.
