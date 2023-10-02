@@ -18,12 +18,13 @@ type
     beep:Boolean ;
     startbeep:Boolean ;
     procedure DrawSelector() ;
-    procedure ClearOldSelector() ;
+    procedure RedrawSelectorIfAt(x,y:Integer) ;
     function genRandomPipeBlock():TBlock ;
+    procedure DrawTekNext() ;
   public
     constructor Create() ;
     destructor Destroy() ; override ;
-    procedure Render() ;
+    procedure RenderOnce() ;
     procedure RenderStatic() ;
     function Update():Boolean ;
     function isGameOver():Boolean ;
@@ -46,20 +47,6 @@ begin
   if r=5 then Result:=TBlockRightBottom.Create() ;
 end ;
 
-procedure TGame.ClearOldSelector() ;
-var x1,y1,x2,y2:Integer ;
-begin
-  // По умолчанию, затираем селектор, если место пустое
-  x1:=oldselx*BLOCKSIZE ;
-  x2:=oldselx*BLOCKSIZE+BLOCKSIZE-1 ;
-  y1:=oldsely*BLOCKSIZE ;
-  y2:=oldsely*BLOCKSIZE+BLOCKSIZE-1 ;
-  DrawLineHorz(x1,x2,y1,0) ;
-  DrawLineHorz(x1,x2,y2,0) ;
-  DrawLineVert(x1,y1,y2,0) ;
-  DrawLineVert(x2,y1,y2,0) ;
-end ;
-
 procedure TGame.DrawSelector() ;
 var x1,y1,x2,y2:Integer ;
 begin
@@ -73,6 +60,17 @@ begin
   DrawLineVert(x2,y1,y2,10) ;
 end ;
 
+procedure TGame.RedrawSelectorIfAt(x,y:Integer) ;
+begin
+  if (x=selx)and(y=sely) then DrawSelector() ;
+end ;
+
+procedure TGame.DrawTekNext() ;
+begin
+  tekblock.Draw(12,1) ;
+  nextblock.Draw(12,3) ;
+end ;
+
 constructor TGame.Create() ;
 var i,j:Integer ;
 begin
@@ -81,7 +79,7 @@ begin
   ticks:=0 ;
   state:=gsNormal ;
 
-  startleft:=TICKSINSEC*19 ; // 20 секунд до старта
+  startleft:=TICKSINSEC*39 ; // 40 секунд до старта
   selx:=3 ; 
   sely:=5 ;
   oldselx:=-1; oldsely:=-1 ;
@@ -123,19 +121,14 @@ begin
   inherited Destroy ;
 end ;
 
-procedure TGame.Render() ;
+procedure TGame.RenderOnce() ;
 var i,j:Integer ;
 begin
   for i:=0 to MAPSIZE-1 do
     for j:=0 to MAPSIZE-1 do
       map[i][j].Draw(i,j) ;
 
-  tekblock.Draw(12,1) ;
-  nextblock.Draw(12,3) ;
-
-  if (oldselx<>selx)or(oldsely<>sely) then begin
-    if (oldselx<>-1) then ClearOldSelector() ;    
-  end ;
+  DrawTekNext() ;
   DrawSelector() ;
 end ;
 
@@ -180,8 +173,15 @@ begin
         map[selx][sely]:=tekblock ;
         tekblock:=nextblock ;
         nextblock:=genRandomPipeBlock() ;
+        map[selx][sely].Draw(oldselx,oldsely) ;
+        DrawTekNext() ;
+        DrawSelector() ;
       end ;
     if scan=1 then Result:=False ;
+  end ;
+  if (oldselx<>selx)or(oldsely<>sely) then begin
+    if (oldselx<>-1) then map[oldselx][oldsely].Draw(oldselx,oldsely) ;
+    DrawSelector() ;
   end ;
 
   cntfilled:=0 ;
@@ -198,11 +198,13 @@ begin
   end ;
 
   Inc(ticks) ;
-  if ticks mod 9 = 0 then begin
+  if ticks mod 3 = 0 then begin
     p:=0 ;
     for i:=0 to MAPSIZE-1 do
       for j:=0 to MAPSIZE-1 do
         if map[i][j].UpdateWater() then begin
+         map[i][j].Draw(i,j) ;
+         RedrawSelectorIfAt(i,j) ;
          for e:=0 to 3 do begin
           idx:=map[i][j].getItemIndexAtEntry(arr_ex[e],arr_ey[e]) ;
           if idx<>-1 then 
@@ -227,8 +229,11 @@ begin
          end ;
         end ;
 
-    for i:=0 to p-1 do
+    for i:=0 to p-1 do begin
       map[newfill[i].i][newfill[i].j].fillItem(newfill[i].idx) ;
+      map[newfill[i].i][newfill[i].j].Draw(newfill[i].i,newfill[i].j) ;
+      RedrawSelectorIfAt(newfill[i].i,newfill[i].j) ;
+    end ;  
 
   end ;
 

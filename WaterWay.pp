@@ -24,10 +24,9 @@ begin
    ClearScreen(0) ;
    SoundOff() ;
    tekgame.RenderStatic() ;
+   tekgame.RenderOnce() ;
    while true do begin
      tekframe:=StartFrame() ;
-
-     tekgame.Render() ;
 
      if not tekgame.Update() then Break ;
 
