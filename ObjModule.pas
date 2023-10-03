@@ -14,10 +14,11 @@ const arr_ex:array[0..3] of Integer = (0,-1,0,1) ;
 
 var bdnull,bdstarthorz,bdstartvert,bdfinish,bdhorz,bdvert,
     bdlefttop,bdrighttop,bdleftbottom,bdrightbottom,
-    bdtripleleft,bdtripleright,bdtripletop,bdtriplebottom:TBlockDescr ;
+    bdtripleleft,bdtripleright,bdtripletop,bdtriplebottom,bdquad:TBlockDescr ;
 
     arr_linear:array[0..18] of TLink ;
     arr_triple:array[0..27] of TLink ;
+    arr_quad:array[0..36] of TLink ;
 
 implementation
 
@@ -30,6 +31,21 @@ begin
     arr_triple[BLOCKSIZE+i-1]:=NewLink(BLOCKSIZE+i,BLOCKSIZE+i+1) ;
   arr_triple[26]:=NewLink(9,BLOCKSIZE+7) ;
   arr_triple[27]:=NewLink(10,BLOCKSIZE+7) ;
+end ;
+
+procedure InitQuadLink() ;
+var i:Integer ;
+begin
+  for i:=0 to BLOCKSIZE-2 do
+    arr_quad[i]:=NewLink(i,i+1) ;
+  for i:=0 to 6 do
+    arr_quad[19+i]:=NewLink(BLOCKSIZE+i,BLOCKSIZE+i+1) ;
+  for i:=0 to 6 do
+    arr_quad[26+i]:=NewLink(BLOCKSIZE+8+i,BLOCKSIZE+i+8+1) ;
+  arr_quad[33]:=NewLink(9,BLOCKSIZE+7) ;
+  arr_quad[34]:=NewLink(10,BLOCKSIZE+7) ;
+  arr_quad[35]:=NewLink(9,BLOCKSIZE+15) ;
+  arr_quad[36]:=NewLink(10,BLOCKSIZE+15) ;
 end ;
 
 procedure InitLinearLink() ;
@@ -54,9 +70,11 @@ bdtripleleft:=TBlockDescr.CreateTripleLeft() ;
 bdtripleright:=TBlockDescr.CreateTripleRight() ;
 bdtripletop:=TBlockDescr.CreateTripleTop() ;
 bdtriplebottom:=TBlockDescr.CreateTripleBottom() ;
+bdquad:=TBlockDescr.CreateQuad() ;
 bdnull:=TBlockDescr.CreateNull() ;
 InitLinearLink() ;
 InitTripleLink() ;
+InitQuadLink() ;
 
 finalization
 
@@ -73,6 +91,7 @@ bdtripleleft.Free ;
 bdtripleright.Free ;
 bdtripletop.Free ;
 bdtriplebottom.Free ;
+bdquad.Free ;
 bdnull.Free ;
 
 end.

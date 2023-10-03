@@ -24,6 +24,7 @@ type
     constructor CreateTripleRight() ;
     constructor CreateTripleTop() ;
     constructor CreateTripleBottom() ;
+    constructor CreateQuad() ;
   end ;
 
 implementation
@@ -253,6 +254,30 @@ begin
   entry[-1,0]:=0 ;
   entry[1,0]:=BLOCKSIZE-1 ;
   entry[0,1]:=BLOCKSIZE ;
+end ;
+
+constructor TBlockDescr.CreateQuad() ;
+var x,y:Byte ;
+begin
+  Create() ;
+  linktype:=ltQuad ;
+  SetLength(items,BLOCKSIZE+16) ;
+  for x:=0 to BLOCKSIZE-1 do
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(x,y+8) ;
+
+  for x:=0 to 7 do
+    for y:=0 to 3 do
+      items[BLOCKSIZE+x].pixels[y]:=NewXY(y+8,x) ;
+
+  for x:=0 to 7 do
+    for y:=0 to 3 do
+      items[BLOCKSIZE+8+x].pixels[y]:=NewXY(y+8,BLOCKSIZE-1-x) ;
+
+  entry[-1,0]:=0 ;
+  entry[1,0]:=BLOCKSIZE-1 ;
+  entry[0,-1]:=BLOCKSIZE ;
+  entry[0,1]:=BLOCKSIZE+8 ;
 end ;
 
 end.

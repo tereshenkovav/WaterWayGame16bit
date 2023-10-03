@@ -3,7 +3,7 @@ unit CommonClasses ;
 interface
 
 type
-  TLinkType = (ltLinear,ltTriple) ;
+  TLinkType = (ltLinear,ltTriple,ltQuad) ;
 
   TGameState = (gsNormal,gsWin,gsFail) ;
 

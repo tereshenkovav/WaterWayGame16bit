@@ -127,6 +127,13 @@ type
     procedure Draw(x,y:Integer); override ;
   end ;
 
+  TBlockQuad = class(TBlock)
+  private
+  public
+    constructor Create() ; 
+    procedure Draw(x,y:Integer); override ;
+  end ;
+
 implementation
 uses CommonProc, ObjModule, GameEngine16 ;
 
@@ -143,12 +150,14 @@ function TBlock.getLinkCount():Integer ;
 begin
   if descr.linktype=ltLinear then Result:=Length(filled)-1 ;
   if descr.linktype=ltTriple then Result:=Length(arr_triple) ;
+  if descr.linktype=ltQuad then Result:=Length(arr_quad) ;
 end ;
 
 function TBlock.getLink(i:Integer):TLink ;
 begin
   if descr.linktype=ltLinear then Result:=arr_linear[i] ;
   if descr.linktype=ltTriple then Result:=arr_triple[i] ;
+  if descr.linktype=ltQuad then Result:=arr_quad[i] ;
 end ;
 
 function TBlock.UpdateWater():Boolean ;
@@ -593,6 +602,40 @@ begin
   DrawLineHorzByLen(x1,BLOCKSIZE,y1+5,18) ;
   DrawLineHorzByLen(x1,BLOCKSIZE,y1+6,17) ;
   DrawLineHorzByLen(x1,BLOCKSIZE,y1+7,16) ;
+
+  DrawWater(x1,y1) ;
+end ;
+
+constructor TBlockQuad.Create() ;
+begin
+  inherited Create(bdquad) ;
+end ;
+
+procedure TBlockQuad.Draw(x,y:Integer) ; 
+var x1,y1,x2,y2:Integer ;
+begin
+  x1:=x*BLOCKSIZE ;
+  y1:=y*BLOCKSIZE ;
+  x2:=x*BLOCKSIZE+BLOCKSIZE-1 ;
+  y2:=y*BLOCKSIZE+BLOCKSIZE-1 ;
+
+  FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
+
+  DrawCornerDXDY(x1,y1+12,8,8,16) ;
+  DrawCornerDXDY(x1,y1+13,7,7,17) ;
+  DrawCornerDXDY(x1,y1+14,6,6,18) ;
+
+  DrawCornerDXDY(x1+BLOCKSIZE-1,y1+12,-8,8,16) ;
+  DrawCornerDXDY(x1+BLOCKSIZE-1,y1+13,-7,7,17) ;
+  DrawCornerDXDY(x1+BLOCKSIZE-1,y1+14,-6,6,18) ;
+
+  DrawCornerDYDX(x1+5,y1,6,-6,18) ;
+  DrawCornerDYDX(x1+6,y1,7,-7,17) ;
+  DrawCornerDYDX(x1+7,y1,8,-8,16) ;
+
+  DrawCornerDYDX(x1+14,y1,6,6,18) ;
+  DrawCornerDYDX(x1+13,y1,7,7,17) ;
+  DrawCornerDYDX(x1+12,y1,8,8,16) ;
 
   DrawWater(x1,y1) ;
 end ;
