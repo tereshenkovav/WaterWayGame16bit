@@ -262,17 +262,25 @@ begin
 
   FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
 
-  DrawLineHorzByLen(x1+BLOCKSIZE div 2,BLOCKSIZE div 2,y1+5,18) ;
+  DrawLineHorzByLen(x1+BLOCKSIZE div 2-1,BLOCKSIZE div 2+1,y1+5,18) ;
   DrawLineHorzByLen(x1+BLOCKSIZE div 2,BLOCKSIZE div 2,y1+6,17) ;
   DrawLineHorzByLen(x1+BLOCKSIZE div 2,BLOCKSIZE div 2,y1+7,16) ;
 
   DrawLineHorzByLen(x1+BLOCKSIZE div 2,BLOCKSIZE div 2,y2-7,16) ;
   DrawLineHorzByLen(x1+BLOCKSIZE div 2,BLOCKSIZE div 2,y2-6,17) ;
-  DrawLineHorzByLen(x1+BLOCKSIZE div 2,BLOCKSIZE div 2,y2-5,18) ;
+  DrawLineHorzByLen(x1+BLOCKSIZE div 2-1,BLOCKSIZE div 2+1,y2-5,18) ;
 
-  DrawLineVertByLen(x1+10,y1+6,8,18) ;
-  DrawLineVertByLen(x1+11,y1+7,6,17) ;
+  DrawLineVertByLen(x1+7,y1+4,12,18) ;
+  DrawLineVertByLen(x1+8,y1+4,12,18) ;
+  DrawLineVertByLen(x1+9,y1+6,8,17) ;
+  DrawLineVertByLen(x1+10,y1+6,8,17) ;
+  DrawLineVertByLen(x1+11,y1+8,4,16) ;
   DrawLineVertByLen(x1+12,y1+8,4,16) ;
+
+  DrawLineHorzByLen(x1+2,6,y1+3,18) ;
+  DrawLineHorzByLen(x1+2,6,y1+16,18) ;
+  DrawLineVertByLen(x1+2,y1+3,13,18) ;
+  FillRect(x1+3,y1+4,4,12,11) ;
 
   DrawWater(x1,y1) ;
 end ;
@@ -291,17 +299,25 @@ begin
 
   FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
 
-  DrawLineVertByLen(x1+5,y1+BLOCKSIZE div 2,BLOCKSIZE div 2,18) ;
+  DrawLineVertByLen(x1+5,y1+BLOCKSIZE div 2-1,BLOCKSIZE div 2+1,18) ;
   DrawLineVertByLen(x1+6,y1+BLOCKSIZE div 2,BLOCKSIZE div 2,17) ;
   DrawLineVertByLen(x1+7,y1+BLOCKSIZE div 2,BLOCKSIZE div 2,16) ;
 
   DrawLineVertByLen(x2-7,y1+BLOCKSIZE div 2,BLOCKSIZE div 2,16) ;
   DrawLineVertByLen(x2-6,y1+BLOCKSIZE div 2,BLOCKSIZE div 2,17) ;
-  DrawLineVertByLen(x2-5,y1+BLOCKSIZE div 2,BLOCKSIZE div 2,18) ;
+  DrawLineVertByLen(x2-5,y1+BLOCKSIZE div 2-1,BLOCKSIZE div 2+1,18) ;
 
-  DrawLineHorzByLen(x1+6,8,y1+10,18) ;
-  DrawLineHorzByLen(x1+7,6,y1+11,17) ;
-  DrawLineHorzByLen(x1+8,4,y1+12,16) ;
+  DrawLineHorzByLen(x1+4,12,y1+7, 18) ;
+  DrawLineHorzByLen(x1+4,12,y1+8, 18) ;
+  DrawLineHorzByLen(x1+6,8, y1+9, 17) ;
+  DrawLineHorzByLen(x1+6,8, y1+10,17) ;
+  DrawLineHorzByLen(x1+8,4, y1+11,16) ;
+  DrawLineHorzByLen(x1+8,4, y1+12,16) ;
+
+  DrawLineVertByLen(x1+3,y1+2,6,18) ;
+  DrawLineVertByLen(x1+16,y1+2,6,18) ;
+  DrawLineHorzByLen(x1+3,13,y1+2,18) ;
+  FillRect(x1+4,y1+3,12,4,11) ;
 
   DrawWater(x1,y1) ;
 end ;
