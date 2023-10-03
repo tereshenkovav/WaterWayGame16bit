@@ -20,6 +20,10 @@ type
     constructor CreateRightTop() ;
     constructor CreateLeftBottom() ;
     constructor CreateRightBottom() ;
+    constructor CreateTripleLeft() ;
+    constructor CreateTripleRight() ;
+    constructor CreateTripleTop() ;
+    constructor CreateTripleBottom() ;
   end ;
 
 implementation
@@ -173,6 +177,82 @@ begin
 
   entry[1,0]:=0 ;
   entry[0,1]:=BLOCKSIZE-1 ;
+end ;
+
+constructor TBlockDescr.CreateTripleLeft() ;
+var x,y:Byte ;
+begin
+  Create() ;
+  linktype:=ltTriple ;
+  SetLength(items,BLOCKSIZE+8) ;
+  for x:=0 to BLOCKSIZE-1 do
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(y+8,x) ;
+
+  for x:=0 to 7 do
+    for y:=0 to 3 do
+      items[BLOCKSIZE+x].pixels[y]:=NewXY(x,y+8) ;
+
+  entry[0,-1]:=0 ;
+  entry[0,1]:=BLOCKSIZE-1 ;
+  entry[-1,0]:=BLOCKSIZE ;
+end ;
+
+constructor TBlockDescr.CreateTripleRight() ;
+var x,y:Byte ;
+begin
+  Create() ;
+  linktype:=ltTriple ;
+  SetLength(items,BLOCKSIZE+8) ;
+  for x:=0 to BLOCKSIZE-1 do
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(y+8,x) ;
+
+  for x:=0 to 7 do
+    for y:=0 to 3 do
+      items[BLOCKSIZE+x].pixels[y]:=NewXY(BLOCKSIZE-1-x,y+8) ;
+
+  entry[0,-1]:=0 ;
+  entry[0,1]:=BLOCKSIZE-1 ;
+  entry[1,0]:=BLOCKSIZE ;
+end ;
+
+constructor TBlockDescr.CreateTripleTop() ;
+var x,y:Byte ;
+begin
+  Create() ;
+  linktype:=ltTriple ;
+  SetLength(items,BLOCKSIZE+8) ;
+  for x:=0 to BLOCKSIZE-1 do
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(x,y+8) ;
+
+  for x:=0 to 7 do
+    for y:=0 to 3 do
+      items[BLOCKSIZE+x].pixels[y]:=NewXY(y+8,x) ;
+
+  entry[-1,0]:=0 ;
+  entry[1,0]:=BLOCKSIZE-1 ;
+  entry[0,-1]:=BLOCKSIZE ;
+end ;
+
+constructor TBlockDescr.CreateTripleBottom() ;
+var x,y:Byte ;
+begin
+  Create() ;
+  linktype:=ltTriple ;
+  SetLength(items,BLOCKSIZE+8) ;
+  for x:=0 to BLOCKSIZE-1 do
+    for y:=0 to 3 do
+      items[x].pixels[y]:=NewXY(x,y+8) ;
+
+  for x:=0 to 7 do
+    for y:=0 to 3 do
+      items[BLOCKSIZE+x].pixels[y]:=NewXY(y+8,BLOCKSIZE-1-x) ;
+
+  entry[-1,0]:=0 ;
+  entry[1,0]:=BLOCKSIZE-1 ;
+  entry[0,1]:=BLOCKSIZE ;
 end ;
 
 end.

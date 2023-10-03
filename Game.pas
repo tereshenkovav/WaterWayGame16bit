@@ -38,13 +38,17 @@ uses ObjModule, GameEngine16 ;
 function TGame.genRandomPipeBlock():TBlock ;
 var r:Integer ;
 begin
-  r:=Random(6) ;
+  r:=Random(10) ;
   if r=0 then Result:=TBlockHorz.Create() ;
   if r=1 then Result:=TBlockVert.Create() ;
   if r=2 then Result:=TBlockLeftTop.Create() ;
   if r=3 then Result:=TBlockRightTop.Create() ;
   if r=4 then Result:=TBlockLeftBottom.Create() ;
   if r=5 then Result:=TBlockRightBottom.Create() ;
+  if r=6 then Result:=TBlockTripleLeft.Create() ;
+  if r=7 then Result:=TBlockTripleRight.Create() ;
+  if r=8 then Result:=TBlockTripleTop.Create() ;
+  if r=9 then Result:=TBlockTripleBottom.Create() ;
 end ;
 
 procedure TGame.DrawSelector() ;
