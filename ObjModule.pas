@@ -20,6 +20,22 @@ var bdnull,bdstarthorz,bdstartvert,bdfinish,bdhorz,bdvert,
     arr_triple:array[0..27] of TLink ;
     arr_quad:array[0..36] of TLink ;
 
+// leveldata
+const
+      CODE_STARTVERT = 20 ;
+      CODE_STARTHORZ = 21 ;
+      CODE_FINISH    = 22 ;
+      CODE_WALL      = 23 ;
+
+      levelcount = 5 ;
+      levelwatertimes:array[0..LEVELCOUNT-1] of Byte = (50,10,30,40,50) ;
+      level1_blocks:array[0..5] of Byte = (
+        CODE_STARTHORZ,1,4,
+        CODE_FINISH,8,6) ;
+      level2_blocks:array[0..5] of Byte = (
+        CODE_STARTVERT,6,1,
+        CODE_FINISH,4,8) ;
+
 implementation
 
 procedure InitTripleLink() ;

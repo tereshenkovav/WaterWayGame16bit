@@ -21,8 +21,9 @@ type
     procedure RedrawSelectorIfAt(x,y:Integer) ;
     function genRandomPipeBlock():TBlock ;
     procedure DrawTekNext() ;
+    function createBlockByCode(r:Integer):TBlock ;
   public
-    constructor Create() ;
+    constructor Create(leveln:Integer) ;
     destructor Destroy() ; override ;
     procedure RenderOnce() ;
     procedure RenderStatic() ;
@@ -33,12 +34,10 @@ type
   end ;
 
 implementation
-uses ObjModule, GameEngine16 ;
+uses ObjModule, GameEngine16, Level ;
 
-function TGame.genRandomPipeBlock():TBlock ;
-var r:Integer ;
+function TGame.createBlockByCode(r:Integer):TBlock ;
 begin
-  r:=Random(11) ;
   if r=0 then Result:=TBlockHorz.Create() ;
   if r=1 then Result:=TBlockVert.Create() ;
   if r=2 then Result:=TBlockLeftTop.Create() ;
@@ -50,6 +49,16 @@ begin
   if r=8 then Result:=TBlockTripleTop.Create() ;
   if r=9 then Result:=TBlockTripleBottom.Create() ;
   if r=10 then Result:=TBlockQuad.Create() ;
+  // Служебные блоки - на эти коды завязаны карты уровней
+  if r=CODE_STARTHORZ then Result:=TBlockStartHorz.Create() ;
+  if r=CODE_STARTVERT then Result:=TBlockStartVert.Create() ;
+  if r=CODE_FINISH then Result:=TBlockFinish.Create() ;
+  if r=CODE_WALL then Result:=TBlockWall.Create() ;
+end ;
+
+function TGame.genRandomPipeBlock():TBlock ;
+begin
+  Result:=createBlockByCode(Random(11)) ;
 end ;
 
 procedure TGame.DrawSelector() ;
@@ -76,17 +85,20 @@ begin
   nextblock.Draw(12,3) ;
 end ;
 
-constructor TGame.Create() ;
+constructor TGame.Create(leveln:Integer) ;
 var i,j:Integer ;
+    level:TLevel ;
 begin
   beep:=False ;
   startbeep:=False ;
   ticks:=0 ;
   state:=gsNormal ;
 
-  startleft:=TICKSINSEC*39 ; // 40 секунд до старта
-  selx:=3 ; 
-  sely:=5 ;
+  level:=TLevel.Create(leveln) ;
+
+  startleft:=TICKSINSEC*level.getWaterTime() ; 
+  selx:=MAPSIZE div 2 ; 
+  sely:=MAPSIZE div 2 ;
   oldselx:=-1; oldsely:=-1 ;
   SetLength(map,MAPSIZE) ;
   for i:=0 to MAPSIZE-1 do
@@ -95,19 +107,12 @@ begin
   for i:=0 to MAPSIZE-1 do
     for j:=0 to MAPSIZE-1 do
       map[i][j]:=empty ;
+  
+  for i:=0 to level.getBlockCount()-1 do 
+    map[level.getBlockX(i)][level.getBlockY(i)]:=
+      createBlockByCode(level.getBlockCode(i)) ; 
 
-  // level conf
-  map[1][3]:=TBlockStartHorz.Create() ;
-  map[3][1]:=TBlockStartVert.Create() ;
-
-  map[8][6]:=TBlockFinish.Create() ;
-  map[6][8]:=TBlockFinish.Create() ;
-
-  map[2][7]:=TBlockWall.Create() ;
-  map[7][2]:=TBlockWall.Create() ;
-
-  map[5][4]:=TBlockWall.Create() ;
-  map[4][5]:=TBlockWall.Create() ;
+  level.Free ;
 
   tekblock:=genRandomPipeBlock() ;
   nextblock:=genRandomPipeBlock() ;

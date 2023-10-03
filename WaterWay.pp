@@ -13,7 +13,7 @@ begin
 
    Screen($13) ;
 
-   tekgame:=TGame.Create() ;
+   tekgame:=TGame.Create(0) ;
 
    pal[0]:=20 ; pal[1]:=20 ; pal[2]:=20 ;
    pal[3]:=30 ; pal[4]:=30 ; pal[5]:=30 ;
