@@ -1,7 +1,7 @@
 unit Game ;
 
 interface
-uses Block, CommonClasses ;
+uses Block, CommonClasses, Level ;
 
 type
   TGame = class
@@ -17,6 +17,7 @@ type
     startleft:Integer ;
     beep:Boolean ;
     startbeep:Boolean ;
+    lvl:TLevel ;
     procedure DrawSelector() ;
     procedure RedrawSelectorIfAt(x,y:Integer) ;
     function genRandomPipeBlock():TBlock ;
@@ -34,7 +35,7 @@ type
   end ;
 
 implementation
-uses ObjModule, GameEngine16, Level, CommonProc ;
+uses ObjModule, GameEngine16, CommonProc ;
 
 function TGame.createBlockByCode(r:Integer):TBlock ;
 begin
@@ -58,7 +59,7 @@ end ;
 
 function TGame.genRandomPipeBlock():TBlock ;
 begin
-  Result:=createBlockByCode(GetRandom(11)) ;
+  Result:=createBlockByCode(lvl.getRandomBlockCode()) ;
 end ;
 
 procedure TGame.DrawSelector() ;
@@ -87,16 +88,15 @@ end ;
 
 constructor TGame.Create(leveln:Integer) ;
 var i,j:Integer ;
-    level:TLevel ;
 begin
   beep:=False ;
   startbeep:=False ;
   ticks:=0 ;
   state:=gsNormal ;
 
-  level:=TLevel.Create(leveln) ;
+  lvl:=TLevel.Create(leveln) ;
 
-  startleft:=TICKSINSEC*level.getWaterTime() ; 
+  startleft:=TICKSINSEC*lvl.getWaterTime() ; 
   selx:=MAPSIZE div 2 ; 
   sely:=MAPSIZE div 2 ;
   oldselx:=-1; oldsely:=-1 ;
@@ -108,11 +108,9 @@ begin
     for j:=0 to MAPSIZE-1 do
       map[i][j]:=empty ;
   
-  for i:=0 to level.getBlockCount()-1 do 
-    map[level.getBlockX(i)][level.getBlockY(i)]:=
-      createBlockByCode(level.getBlockCode(i)) ; 
-
-  level.Free ;
+  for i:=0 to lvl.getBlockCount()-1 do 
+    map[lvl.getBlockX(i)][lvl.getBlockY(i)]:=
+      createBlockByCode(lvl.getBlockCode(i)) ; 
 
   tekblock:=genRandomPipeBlock() ;
   nextblock:=genRandomPipeBlock() ;
@@ -121,6 +119,8 @@ end ;
 destructor TGame.Destroy() ;
 var i,j:Integer ;
 begin
+  lvl.Free ;
+
   for i:=0 to MAPSIZE-1 do
     for j:=0 to MAPSIZE-1 do
       if not empty.IsEmpty() then map[i][j].Free ;

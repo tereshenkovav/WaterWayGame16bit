@@ -32,9 +32,13 @@ const
       level1_blocks:array[0..5] of Byte = (
         CODE_STARTHORZ,1,4,
         CODE_FINISH,8,6) ;
+      level1_freq_blocks:array[0..5] of Byte = 
+        (0,0,0,0,3,4) ;
       level2_blocks:array[0..5] of Byte = (
         CODE_STARTVERT,6,1,
         CODE_FINISH,4,8) ;
+      level2_freq_blocks:array[0..5] of Byte = 
+        (1,1,1,1,2,5) ;
 
 implementation
 

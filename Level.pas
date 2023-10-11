@@ -7,8 +7,10 @@ type
   private
     leveln:Integer ;
     arr:array of Byte ;
+    freq:array of Byte ;
   public
     constructor Create(Aleveln:Integer) ;
+    function getRandomBlockCode():Integer ;
     function getWaterTime():Byte ;
     function getBlockCount():Byte ;
     function getBlockX(i:Integer):Byte ;
@@ -17,13 +19,20 @@ type
   end ;
 
 implementation
-uses ObjModule ;
+uses ObjModule, CommonProc ;
 
 constructor TLevel.Create(Aleveln:Integer) ;
 begin
   Self.leveln:=Aleveln ;
   if leveln=0 then arr:=level1_blocks ;
   if leveln=1 then arr:=level2_blocks ;
+  if leveln=0 then freq:=level1_freq_blocks ;
+  if leveln=1 then freq:=level2_freq_blocks ;
+end ;
+
+function TLevel.getRandomBlockCode():Integer ;
+begin
+  Result:=freq[GetRandom(Length(freq))]
 end ;
 
 function TLevel.getWaterTime():Byte ;
