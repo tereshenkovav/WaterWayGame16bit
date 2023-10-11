@@ -1,6 +1,6 @@
 program WaterWay ;
 
-uses GameEngine16, Game, ObjModule ;
+uses GameEngine16, Game, ObjModule, CommonProc ;
 
 var
    pal:array[0..29] of byte ;
@@ -9,9 +9,8 @@ var
    tekgame:TGame ;
    key,scan:Byte ;
 begin
-   Randomize() ;
-
    Screen($13) ;
+   InitRandom() ;
 
    tekgame:=TGame.Create(0) ;
 

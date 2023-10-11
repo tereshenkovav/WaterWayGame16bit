@@ -34,7 +34,7 @@ type
   end ;
 
 implementation
-uses ObjModule, GameEngine16, Level ;
+uses ObjModule, GameEngine16, Level, CommonProc ;
 
 function TGame.createBlockByCode(r:Integer):TBlock ;
 begin
@@ -58,7 +58,7 @@ end ;
 
 function TGame.genRandomPipeBlock():TBlock ;
 begin
-  Result:=createBlockByCode(Random(11)) ;
+  Result:=createBlockByCode(GetRandom(11)) ;
 end ;
 
 procedure TGame.DrawSelector() ;
