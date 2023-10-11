@@ -14,6 +14,7 @@ procedure SetCursorXY(x,y:Byte) ;
 procedure SetPaletteData(start:Byte; count:Byte; data:array of Byte) ; 
 procedure SetPaletteColor(color:Byte; r,g,b:Byte) ; 
 function IsKeyPressed(var key:Byte; var scan:Byte):Boolean ; 
+procedure WaitKeyPressed(var key:Byte; var scan:Byte) ;
 procedure SoundOff() ; 
 procedure SoundFreq(freq:Word) ; 
 procedure SoundOn() ; 
@@ -157,6 +158,11 @@ asm
   mov ah,00h
   int 16h
 nokey:
+end ;
+
+procedure WaitKeyPressed(var key:Byte; var scan:Byte) ;
+begin
+   while (not IsKeyPressed(key,scan)) do ;
 end ;
 
 procedure SoundOff() ; assembler ;
