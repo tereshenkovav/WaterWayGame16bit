@@ -128,14 +128,16 @@ destructor TGame.Destroy() ;
 var i,j:Integer ;
 begin
   lvl.Free ;
-
   for i:=0 to MAPSIZE-1 do
     for j:=0 to MAPSIZE-1 do
-      if not empty.IsEmpty() then map[i][j].Free ;
+      if not map[i][j].IsEmpty() then map[i][j].Free ;
   for i:=0 to MAPSIZE-1 do
     SetLength(map[i],0) ;
   SetLength(map,0) ;
   empty.Free ;
+  tekblock.Free ;
+  nextblock.Free ;
+
   inherited Destroy ;
 end ;
 

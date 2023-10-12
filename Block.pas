@@ -13,6 +13,7 @@ type
     function getLink(i:Integer):TLink ;
   public
     constructor Create(Adescr:TBlockDescr) ; 
+    destructor Destroy ; override ;
     function getItemIndexAtEntry(ex,ey:Smallint):Integer ;
     function isItemFilled(idx:Integer):Boolean ;
     procedure fillItem(idx:Integer) ;
@@ -149,6 +150,12 @@ begin
   SetLength(filled,Length(descr.items)) ;
   for i:=0 to Length(descr.items)-1 do
     filled[i]:=False ;
+end ;
+
+destructor TBlock.Destroy ;
+begin
+  SetLength(filled,0) ;
+  inherited Destroy ;
 end ;
 
 function TBlock.getLinkCount():Integer ;
