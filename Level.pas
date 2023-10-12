@@ -10,6 +10,7 @@ type
     freq:array of Byte ;
   public
     constructor Create(Aleveln:Integer) ;
+    function getLevelN():Integer ;
     function getRandomBlockCode():Integer ;
     function getWaterTime():Byte ;
     function getBlockCount():Byte ;
@@ -28,6 +29,11 @@ begin
   if leveln=1 then arr:=level2_blocks ;
   if leveln=0 then freq:=level1_freq_blocks ;
   if leveln=1 then freq:=level2_freq_blocks ;
+end ;
+
+function TLevel.getLevelN():Integer ;
+begin
+  Result:=leveln ;
 end ;
 
 function TLevel.getRandomBlockCode():Integer ;

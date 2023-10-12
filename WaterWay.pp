@@ -4,14 +4,16 @@ uses GameEngine16, Game, ObjModule, CommonProc, Block ;
 
 var
    pal:array[0..29] of byte ;
+   nextlevel:Integer ;
 
-procedure StartGame() ;
+function StartGame():Boolean ;
 var tekframe:Word ;
     soundlen:Integer ;
     tekgame:TGame ;
     key,scan:Byte ;
 begin
-   tekgame:=TGame.Create(0) ;
+   Result:=False ;
+   tekgame:=TGame.Create(nextlevel) ;
 
    soundlen:=0 ;
    ClearScreen(0) ;
@@ -35,12 +37,27 @@ begin
      end ;
 
      if tekgame.isGameOver() then begin
-       SetCursorXY(28,12) ; Write('Game over') ;
-       SetCursorXY(28,13) ;
-       if tekgame.isWin() then Write('You winner!') else Write('You failed!') ;
+       SetCursorXY(26,14) ; Write('Game over') ;
+       SetCursorXY(26,23) ; Write('Press Enter') ;
+       if tekgame.isWin() then begin
+         SetCursorXY(26,15) ; Write('You winner!') ;
+         if nextlevel=levelcount-1 then begin
+           SetCursorXY(26,17) ; Write('Game finished!') ;
+         end
+         else begin
+           SetCursorXY(26,17) ; Write('Your code:') ;
+           SetCursorXY(26,18) ; Write('ABC:') ;
+           Inc(nextlevel) ;
+           Result:=True ;
+         end ;
+       end 
+       else begin ;
+         SetCursorXY(26,15) ;
+         Write('You failed!') ;
+       end ;
        while True do begin
-         if IsKeyPressed(key,scan) then 
-           if scan=1 then break ;
+         WaitKeyPressed(key,scan) ;
+         if scan=28 then break ;
        end ;
        break ;
      end ;
@@ -81,9 +98,12 @@ end ;
 var key,scan:Byte ;
     block1:TBlock ;
     i:Integer ;
+    s:string ;
 begin
    Screen($13) ;
    InitRandom() ;
+
+   nextlevel:=0 ;
 
    pal[0]:=20 ; pal[1]:=20 ; pal[2]:=20 ;
    pal[3]:=30 ; pal[4]:=30 ; pal[5]:=30 ;
@@ -120,10 +140,12 @@ begin
    SetCursorXY(14,5) ; Write('Pipeman game') ;
    SetCursorXY(17,6) ; Write('v0.5.0') ;
 
-   SetCursorXY(13,11) ; Write('1 - Start game') ;
-   SetCursorXY(13,12) ; Write('2 - Enter code') ;
-   SetCursorXY(13,13) ; Write('3 - Help') ;
-   SetCursorXY(13,14) ; Write('0 - Exit') ;
+   Str(nextlevel+1,s) ;
+   SetCursorXY(13,11) ; Write('Level: ',s) ;
+   SetCursorXY(13,13) ; Write('1 - Start game') ;
+   SetCursorXY(13,14) ; Write('2 - Enter code') ;
+   SetCursorXY(13,15) ; Write('3 - Help') ;
+   SetCursorXY(13,16) ; Write('0 - Exit') ;
 
    while True do begin
      WaitKeyPressed(key,scan) ;
@@ -134,7 +156,9 @@ begin
        Exit ;
      end ;
      if key=ord('1') then begin
-       StartGame() ;
+       while True do begin
+         if not StartGame() then Break ;
+       end ;
        break ;
      end ;
      if key=ord('3') then begin

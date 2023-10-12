@@ -27,8 +27,8 @@ const
       CODE_FINISH    = 22 ;
       CODE_WALL      = 23 ;
 
-      levelcount = 5 ;
-      levelwatertimes:array[0..LEVELCOUNT-1] of Byte = (50,10,30,40,50) ;
+      levelcount = 2 ;
+      levelwatertimes:array[0..LEVELCOUNT-1] of Byte = (10,10) ;
       level1_blocks:array[0..5] of Byte = (
         CODE_STARTHORZ,1,4,
         CODE_FINISH,8,6) ;

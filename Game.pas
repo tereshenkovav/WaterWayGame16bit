@@ -82,8 +82,8 @@ end ;
 
 procedure TGame.DrawTekNext() ;
 begin
-  tekblock.Draw(12,1) ;
-  nextblock.Draw(12,3) ;
+  tekblock.Draw(12,2) ;
+  nextblock.Draw(12,4) ;
 end ;
 
 constructor TGame.Create(leveln:Integer) ;
@@ -143,6 +143,7 @@ begin
 end ;
 
 procedure TGame.RenderStatic() ;
+var s:string ;
 begin
   DrawLineHorz(MAPSIZE*BLOCKSIZE,SCREENW-1,0,18) ;
   DrawLineHorz(MAPSIZE*BLOCKSIZE,SCREENW-1,1,17) ;
@@ -157,8 +158,10 @@ begin
   DrawLineVert(SCREENW-2,1,SCREENH-2,17) ;
   DrawLineVert(SCREENW-1,0,SCREENH-1,18) ;
 
-  SetCursorXY(28,1) ; Write('Current') ;
-  SetCursorXY(28,6) ; Write(' Next') ;
+  Str(lvl.getLevelN()+1,s) ;
+  SetCursorXY(28,1) ; Write('Level: ',s) ;
+  SetCursorXY(28,3) ; Write('Current') ;
+  SetCursorXY(28,8) ; Write(' Next') ;
 end ;
 
 function TGame.Update():Boolean ;
@@ -249,7 +252,7 @@ begin
 
   if startleft>0 then begin
     Dec(startleft) ;
-    SetCursorXY(26,12) ; 
+    SetCursorXY(26,14) ; 
     if startleft>0 then Write('Water in ',startleft div TICKSINSEC + 1,' ') else Write('           ') ;
     if (startleft<=TICKSINSEC) and (not startbeep) then begin
       beep:=True ;
