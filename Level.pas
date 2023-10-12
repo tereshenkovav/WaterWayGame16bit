@@ -27,8 +27,14 @@ begin
   Self.leveln:=Aleveln ;
   if leveln=0 then arr:=level1_blocks ;
   if leveln=1 then arr:=level2_blocks ;
+  if leveln=2 then arr:=level3_blocks ;
+  if leveln=3 then arr:=level4_blocks ;
+  if leveln=4 then arr:=level5_blocks ;
   if leveln=0 then freq:=level1_freq_blocks ;
   if leveln=1 then freq:=level2_freq_blocks ;
+  if leveln=2 then freq:=level3_freq_blocks ;
+  if leveln=3 then freq:=level4_freq_blocks ;
+  if leveln=4 then freq:=level5_freq_blocks ;
 end ;
 
 function TLevel.getLevelN():Integer ;
