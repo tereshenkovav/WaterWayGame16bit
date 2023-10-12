@@ -45,7 +45,7 @@ begin
          end
          else begin
            WriteXY(26,17,'Your code:') ;
-           WriteXY(26,18,'ABC:') ;
+           WriteXY(26,18,levelcodes[nextlevel]) ;
            Inc(nextlevel) ;
            Result:=True ;
          end ;
@@ -92,6 +92,16 @@ begin
    WriteXY(9,23,'tav-developer.itch.io') ;
 
    WaitKeyPressed(key,scan) ;
+end ;
+
+procedure EnterCode() ;
+var s:string ;
+    i:Integer ;
+begin
+   WriteXY(10,20,'Enter level code:') ;
+   Readln(s) ;
+   for i:=0 to levelcount-2 do
+     if (s=levelcodes[i]) then nextlevel:=i+1 ;
 end ;
 
 var key,scan:Byte ;
@@ -149,6 +159,10 @@ begin
        while True do begin
          if not StartGame() then Break ;
        end ;
+       break ;
+     end ;
+     if key=50 then begin
+       EnterCode() ;
        break ;
      end ;
      if key=51 then begin

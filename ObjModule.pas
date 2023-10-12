@@ -30,6 +30,8 @@ const
 
       levelcount = 5 ;
       levelwatertimes:array[0..LEVELCOUNT-1] of Byte = (20,20,20,30,40) ;
+      levelcodes:array[0..LEVELCOUNT-2] of string[5] = 
+        ('73128','89423','37591','69027') ;
 
       // Слева направо, 1 в 1
       level1_blocks:array[0..5] of Byte = (
