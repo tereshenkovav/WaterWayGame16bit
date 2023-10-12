@@ -153,7 +153,6 @@ begin
      if key=ord('0') then begin
        Screen($3) ;
        SoundOff() ;
-       Writeln(MemAvail()) ;
        Exit ;
      end ;
      if key=ord('1') then begin

@@ -283,6 +283,9 @@ begin
           if (map[i][j] is TBlockStartHorz)or(map[i][j] is TBlockStartVert) then
             map[i][j].StartWater() ;
   end ;
+  {$IFNDEF RELEASE}
+  SetCursorXY(26,24) ; Write(MemAvail()) ;
+  {$ENDIF}
 end ;
 
 function TGame.isGameOver():Boolean ;
