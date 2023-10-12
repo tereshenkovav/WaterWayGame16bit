@@ -18,10 +18,12 @@ type
     beep:Boolean ;
     startbeep:Boolean ;
     lvl:TLevel ;
+    replace:Integer ;
     procedure DrawSelector() ;
     procedure RedrawSelectorIfAt(x,y:Integer) ;
     function genRandomPipeBlock():TBlock ;
     procedure DrawTekNext() ;
+    procedure DrawReplace() ;
     function createBlockByCode(r:Integer):TBlock ;
   public
     constructor Create(leveln:Integer) ;
@@ -75,6 +77,11 @@ begin
   DrawLineVert(x2,y1,y2,10) ;
 end ;
 
+procedure TGame.DrawReplace() ;
+begin
+  SetCursorXY(26,15) ; Write('Replace: '+chr(replace+48)) ;
+end ;
+
 procedure TGame.RedrawSelectorIfAt(x,y:Integer) ;
 begin
   if (x=selx)and(y=sely) then DrawSelector() ;
@@ -93,6 +100,7 @@ begin
   startbeep:=False ;
   ticks:=0 ;
   state:=gsNormal ;
+  replace:=2 ;
 
   lvl:=TLevel.Create(leveln) ;
 
@@ -162,6 +170,7 @@ begin
   SetCursorXY(28,1) ; Write('Level: ',s) ;
   SetCursorXY(28,3) ; Write('Current') ;
   SetCursorXY(28,8) ; Write(' Next') ;
+  DrawReplace() ;
 end ;
 
 function TGame.Update():Boolean ;
@@ -181,7 +190,16 @@ begin
     if scan=80 then if sely<MAPSIZE-1 then Inc(sely) ;
     if scan=75 then if selx>0 then Dec(selx) ;
     if scan=77 then if selx<MAPSIZE-1 then Inc(selx) ;
-    if scan=57 then 
+    if scan=57 then begin
+      if not map[selx][sely].isEmpty() then begin
+        if map[selx][sely].canReplace() and 
+          (not map[selx][sely].isFilled()) and (replace>0) then begin
+          map[selx][sely].Free ;
+          map[selx][sely]:=empty ;
+          Dec(replace) ;
+          DrawReplace() ;
+        end ;
+      end ;
       if map[selx][sely].isEmpty() then begin
         map[selx][sely]:=tekblock ;
         tekblock:=nextblock ;
@@ -190,6 +208,7 @@ begin
         DrawTekNext() ;
         DrawSelector() ;
       end ;
+    end ;
     if scan=1 then Result:=False ;
   end ;
   if (oldselx<>selx)or(oldsely<>sely) then begin
@@ -203,7 +222,7 @@ begin
     for j:=0 to MAPSIZE-1 do
       if map[i][j] is TBlockFinish then begin
         Inc(cnt) ; 
-        if TBlockFinish(map[i][j]).isFilled() then Inc(cntfilled) ;
+        if map[i][j].isFilled() then Inc(cntfilled) ;
       end ;
   if cntfilled=cnt then begin
     state:=gsWin ; 

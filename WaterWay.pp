@@ -81,11 +81,12 @@ begin
    SetCursorXY(2,8) ; Write('Pipes can be placed anywhere, ') ;
    SetCursorXY(2,9) ; Write('the installation is done by pressing') ;
    SetCursorXY(2,10) ; Write('the "Space bar". Pipes can be') ;
-   SetCursorXY(2,11) ; Write('replaced, but they cannot be rotated.') ;
-   SetCursorXY(2,12); Write('The level is completed when all the') ;
-   SetCursorXY(2,13); Write('destination points are filled. ') ;
-   SetCursorXY(2,14); Write('If the water spills out of the pipe,') ;
-   SetCursorXY(2,15); Write('then the game is lost.') ;
+   SetCursorXY(2,11) ; Write('replaced (several times on level),') ;
+   SetCursorXY(2,12) ; Write('but they cannot be rotated.') ;
+   SetCursorXY(2,13); Write('The level is completed when all the') ;
+   SetCursorXY(2,14); Write('destination points are filled. ') ;
+   SetCursorXY(2,15); Write('If the water spills out of the pipe,') ;
+   SetCursorXY(2,16); Write('then the game is lost.') ;
 
    SetCursorXY(13,19); Write('Developed by:') ;
    SetCursorXY(8,21) ; Write('Aleksandr V. Tereshenkov') ;

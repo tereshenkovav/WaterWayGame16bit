@@ -16,7 +16,9 @@ type
     function getItemIndexAtEntry(ex,ey:Smallint):Integer ;
     function isItemFilled(idx:Integer):Boolean ;
     procedure fillItem(idx:Integer) ;
+    function isFilled():Boolean ;
     procedure StartWater() ; // Просто обертка для удобства
+    function CanReplace():Boolean ; virtual ;
     function UpdateWater():Boolean ;
     procedure Draw(x,y:Integer); virtual ; abstract ;
     function isEmpty():Boolean ; virtual ;
@@ -31,7 +33,8 @@ type
 
   TBlockWall = class(TBlock)
   public
-    constructor Create() ; 
+    constructor Create() ;
+    function CanReplace():Boolean ; override ;
     procedure Draw(x,y:Integer); override ;
   end ;
 
@@ -39,6 +42,7 @@ type
   private
   public
     constructor Create() ;
+    function CanReplace():Boolean ; override ;
     procedure Draw(x,y:Integer); override ;
   end ;
 
@@ -46,6 +50,7 @@ type
   private
   public
     constructor Create() ;
+    function CanReplace():Boolean ; override ;
     procedure Draw(x,y:Integer); override ;
   end ;
 
@@ -53,7 +58,7 @@ type
   private
   public
     constructor Create() ;
-    function isFilled():Boolean ;
+    function CanReplace():Boolean ; override ;
     procedure Draw(x,y:Integer); override ;
   end ;
 
@@ -160,6 +165,11 @@ begin
   if descr.linktype=ltQuad then Result:=arr_quad[i] ;
 end ;
 
+function TBlock.CanReplace():Boolean ;
+begin
+  Result:=True ;
+end ;
+
 function TBlock.UpdateWater():Boolean ;
 var i,j,p:Integer ;
     newfilled:array[0..15] of Integer ;
@@ -215,6 +225,14 @@ begin
   if Length(filled)>0 then filled[0]:=True ;
 end ;
 
+function TBlock.isFilled():Boolean ;
+var i:Integer ;
+begin
+  Result:=False ;
+  for i:=0 to Length(filled)-1 do
+    if filled[i] then Exit(True) ;
+end ;
+
 constructor TBlockEmpty.Create() ; 
 begin
   inherited Create(bdnull) ;
@@ -235,6 +253,11 @@ begin
   inherited Create(bdnull) ;
 end ;
 
+function TBlockWall.CanReplace():Boolean ;
+begin
+  Result:=False ;
+end ;
+
 procedure TBlockWall.Draw(x,y:Integer) ; 
 var x1,y1:Integer ;
 begin
@@ -251,6 +274,11 @@ end ;
 constructor TBlockStartHorz.Create() ;
 begin
   inherited Create(bdstarthorz) ;
+end ;
+
+function TBlockStartHorz.CanReplace():Boolean ;
+begin
+  Result:=False ;
 end ;
 
 procedure TBlockStartHorz.Draw(x,y:Integer) ; 
@@ -290,6 +318,11 @@ begin
   inherited Create(bdstartvert) ;
 end ;
 
+function TBlockStartVert.CanReplace():Boolean ;
+begin
+  Result:=False ;
+end ;
+
 procedure TBlockStartVert.Draw(x,y:Integer) ; 
 var x1,y1,x2:Integer ;
 begin
@@ -327,9 +360,9 @@ begin
   inherited Create(bdfinish) ;
 end ;
 
-function TBlockFinish.isFilled():Boolean ;
+function TBlockFinish.CanReplace():Boolean ;
 begin
-  Result:=filled[0] ;
+  Result:=False ;
 end ;
 
 procedure TBlockFinish.Draw(x,y:Integer) ; 
