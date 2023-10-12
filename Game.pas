@@ -79,7 +79,7 @@ end ;
 
 procedure TGame.DrawReplace() ;
 begin
-  SetCursorXY(26,15) ; Write('Replace: '+chr(replace+48)) ;
+  SetCursorXY(26,15) ; Write('Replace: ',replace) ;
 end ;
 
 procedure TGame.RedrawSelectorIfAt(x,y:Integer) ;
@@ -153,7 +153,6 @@ begin
 end ;
 
 procedure TGame.RenderStatic() ;
-var s:string ;
 begin
   DrawLineHorz(MAPSIZE*BLOCKSIZE,SCREENW-1,0,18) ;
   DrawLineHorz(MAPSIZE*BLOCKSIZE,SCREENW-1,1,17) ;
@@ -168,10 +167,9 @@ begin
   DrawLineVert(SCREENW-2,1,SCREENH-2,17) ;
   DrawLineVert(SCREENW-1,0,SCREENH-1,18) ;
 
-  Str(lvl.getLevelN()+1,s) ;
-  SetCursorXY(28,1) ; Write('Level: ',s) ;
-  SetCursorXY(28,3) ; Write('Current') ;
-  SetCursorXY(28,8) ; Write(' Next') ;
+  SetCursorXY(28,1) ; Write('Level: ',lvl.getLevelN()+1) ;
+  WriteXY(28,3,'Current') ;
+  WriteXY(28,8,' Next') ;
   DrawReplace() ;
 end ;
 

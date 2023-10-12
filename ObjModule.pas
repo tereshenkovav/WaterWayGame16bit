@@ -5,6 +5,7 @@ uses BlockDescr, CommonClasses ;
 
 const arr_ex:array[0..3] of Integer = (0,-1,0,1) ;
       arr_ey:array[0..3] of Integer = (1,0,-1,0) ;
+      pal:array[0..8] of byte = (20,20,20,30,30,30,40,40,40) ;
 
       BLOCKSIZE = 20 ;
       MAPSIZE = 10 ;

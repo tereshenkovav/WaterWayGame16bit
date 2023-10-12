@@ -22,9 +22,9 @@ type
   end ;
 
   TNewWater = record
-    i:Integer ;
-    j:Integer ;
-    idx:Integer ;
+    i:Byte ;
+    j:Byte ;
+    idx:Byte ;
   end ;
 
 function NewXY(x,y:Byte):TXY ;

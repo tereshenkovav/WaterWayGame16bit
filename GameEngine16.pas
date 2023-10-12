@@ -11,6 +11,7 @@ procedure DrawLineHorzByLen(x1:Word; len:Integer; y:Word; color:Byte) ;
 procedure DrawLineVert(x,y1,y2:Word; color:Byte) ; 
 procedure DrawLineVertByLen(x,y1,len:Word; color:Byte) ; 
 procedure SetCursorXY(x,y:Byte) ; 
+procedure WriteXY(x,y:Byte; s:string) ; 
 procedure SetPaletteData(start:Byte; count:Byte; data:array of Byte) ; 
 procedure SetPaletteColor(color:Byte; r,g,b:Byte) ; 
 function IsKeyPressed(var key:Byte; var scan:Byte):Boolean ; 
@@ -118,6 +119,18 @@ asm
   mov bh, 0
   mov ah, 2
   int 10h 
+end ;
+
+procedure WriteXY(x,y:Byte; s:string) ;
+begin
+asm
+  mov dh, y
+  mov dl, x
+  mov bh, 0
+  mov ah, 2
+  int 10h 
+end ;
+  Write(s) ;
 end ;
 
 procedure SetPaletteData(start:Byte; count:Byte; data:array of Byte) ; assembler ;

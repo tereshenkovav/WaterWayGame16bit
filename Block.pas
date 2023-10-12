@@ -178,8 +178,8 @@ begin
 end ;
 
 function TBlock.UpdateWater():Boolean ;
-var i,j,p:Integer ;
-    newfilled:array[0..15] of Integer ;
+var i,p:Integer ;
+    newfilled:array[0..15] of Byte ;
 begin
   p:=0 ;
   for i:=0 to getLinkCount()-1 do begin
@@ -289,7 +289,7 @@ begin
 end ;
 
 procedure TBlockStartHorz.Draw(x,y:Integer) ; 
-var x1,y1,y2,yw:Integer ;
+var x1,y1,y2:Integer ;
 begin
   x1:=x*BLOCKSIZE ;
   y1:=y*BLOCKSIZE ;
@@ -394,7 +394,7 @@ begin
 end ;
 
 procedure TBlockHorz.Draw(x,y:Integer) ; 
-var x1,y1,y2,yw:Integer ;
+var x1,y1,y2:Integer ;
 begin
   x1:=x*BLOCKSIZE ;
   y1:=y*BLOCKSIZE ;
@@ -419,7 +419,7 @@ begin
 end ;
 
 procedure TBlockVert.Draw(x,y:Integer) ; 
-var x1,y1,x2,xw:Integer ;
+var x1,y1,x2:Integer ;
 begin
   x1:=x*BLOCKSIZE ;
   y1:=y*BLOCKSIZE ;
@@ -444,12 +444,10 @@ begin
 end ;
 
 procedure TBlockLeftTop.Draw(x,y:Integer) ; 
-var x1,y1,x2,y2:Integer ;
+var x1,y1:Integer ;
 begin
   x1:=x*BLOCKSIZE ;
   y1:=y*BLOCKSIZE ;
-  x2:=x*BLOCKSIZE+BLOCKSIZE-1 ;
-  y2:=y*BLOCKSIZE+BLOCKSIZE-1 ;
 
   FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
 
@@ -470,12 +468,10 @@ begin
 end ;
 
 procedure TBlockRightTop.Draw(x,y:Integer) ; 
-var x1,y1,x2,y2:Integer ;
+var x1,y1:Integer ;
 begin
   x1:=x*BLOCKSIZE ;
   y1:=y*BLOCKSIZE ;
-  x2:=x*BLOCKSIZE+BLOCKSIZE-1 ;
-  y2:=y*BLOCKSIZE+BLOCKSIZE-1 ;
 
   FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
 
@@ -496,12 +492,10 @@ begin
 end ;
 
 procedure TBlockLeftBottom.Draw(x,y:Integer) ; 
-var x1,y1,x2,y2:Integer ;
+var x1,y1:Integer ;
 begin
   x1:=x*BLOCKSIZE ;
   y1:=y*BLOCKSIZE ;
-  x2:=x*BLOCKSIZE+BLOCKSIZE-1 ;
-  y2:=y*BLOCKSIZE+BLOCKSIZE-1 ;
 
   FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
 
@@ -522,12 +516,10 @@ begin
 end ;
 
 procedure TBlockRightBottom.Draw(x,y:Integer) ; 
-var x1,y1,x2,y2:Integer ;
+var x1,y1:Integer ;
 begin
   x1:=x*BLOCKSIZE ;
   y1:=y*BLOCKSIZE ;
-  x2:=x*BLOCKSIZE+BLOCKSIZE-1 ;
-  y2:=y*BLOCKSIZE+BLOCKSIZE-1 ;
 
   FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
 
@@ -548,12 +540,11 @@ begin
 end ;
 
 procedure TBlockTripleLeft.Draw(x,y:Integer) ; 
-var x1,y1,x2,y2:Integer ;
+var x1,y1,x2:Integer ;
 begin
   x1:=x*BLOCKSIZE ;
   y1:=y*BLOCKSIZE ;
   x2:=x*BLOCKSIZE+BLOCKSIZE-1 ;
-  y2:=y*BLOCKSIZE+BLOCKSIZE-1 ;
 
   FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
 
@@ -578,12 +569,10 @@ begin
 end ;
 
 procedure TBlockTripleRight.Draw(x,y:Integer) ; 
-var x1,y1,x2,y2:Integer ;
+var x1,y1:Integer ;
 begin
   x1:=x*BLOCKSIZE ;
   y1:=y*BLOCKSIZE ;
-  x2:=x*BLOCKSIZE+BLOCKSIZE-1 ;
-  y2:=y*BLOCKSIZE+BLOCKSIZE-1 ;
 
   FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
 
@@ -608,11 +597,10 @@ begin
 end ;
 
 procedure TBlockTripleTop.Draw(x,y:Integer) ; 
-var x1,y1,x2,y2:Integer ;
+var x1,y1,y2:Integer ;
 begin
   x1:=x*BLOCKSIZE ;
   y1:=y*BLOCKSIZE ;
-  x2:=x*BLOCKSIZE+BLOCKSIZE-1 ;
   y2:=y*BLOCKSIZE+BLOCKSIZE-1 ;
 
   FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
@@ -638,12 +626,10 @@ begin
 end ;
 
 procedure TBlockTripleBottom.Draw(x,y:Integer) ; 
-var x1,y1,x2,y2:Integer ;
+var x1,y1:Integer ;
 begin
   x1:=x*BLOCKSIZE ;
   y1:=y*BLOCKSIZE ;
-  x2:=x*BLOCKSIZE+BLOCKSIZE-1 ;
-  y2:=y*BLOCKSIZE+BLOCKSIZE-1 ;
 
   FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
 
@@ -668,12 +654,10 @@ begin
 end ;
 
 procedure TBlockQuad.Draw(x,y:Integer) ; 
-var x1,y1,x2,y2:Integer ;
+var x1,y1:Integer ;
 begin
   x1:=x*BLOCKSIZE ;
   y1:=y*BLOCKSIZE ;
-  x2:=x*BLOCKSIZE+BLOCKSIZE-1 ;
-  y2:=y*BLOCKSIZE+BLOCKSIZE-1 ;
 
   FillRect(x1,y1,BLOCKSIZE,BLOCKSIZE,0) ;
 
