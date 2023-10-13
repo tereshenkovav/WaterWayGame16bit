@@ -7,9 +7,11 @@ type
   private
     leveln:Integer ;
     arr:array of Byte ;
-    freq:array of Byte ;
+    seq:array of Byte ;
+    nextp:Integer ;
   public
     constructor Create(Aleveln:Integer) ;
+    destructor Destroy ; override ;
     function getLevelN():Integer ;
     function getRandomBlockCode():Integer ;
     function getWaterTime():Byte ;
@@ -23,6 +25,9 @@ implementation
 uses ObjModule, CommonProc ;
 
 constructor TLevel.Create(Aleveln:Integer) ;
+var src:array of byte ;
+    i,idx1,idx2:Integer ;
+    tmp:byte; 
 begin
   Self.leveln:=Aleveln ;
   if leveln=0 then arr:=level1_blocks ;
@@ -31,12 +36,29 @@ begin
   if leveln=3 then arr:=level4_blocks ;
   if leveln=4 then arr:=level5_blocks ;
   if leveln=5 then arr:=level6_blocks ;
-  if leveln=0 then freq:=level1_freq_blocks ;
-  if leveln=1 then freq:=level2_freq_blocks ;
-  if leveln=2 then freq:=level3_freq_blocks ;
-  if leveln=3 then freq:=level4_freq_blocks ;
-  if leveln=4 then freq:=level5_freq_blocks ;
-  if leveln=5 then freq:=level6_freq_blocks ;
+  if leveln=0 then src:=level1_freq_blocks ;
+  if leveln=1 then src:=level2_freq_blocks ;
+  if leveln=2 then src:=level3_freq_blocks ;
+  if leveln=3 then src:=level4_freq_blocks ;
+  if leveln=4 then src:=level5_freq_blocks ;
+  if leveln=5 then src:=level6_freq_blocks ;
+  SetLength(seq,Length(src)) ;
+  for i:=0 to Length(seq)-1 do
+    seq[i]:=src[i] ;
+  for i:=0 to 10*Length(seq)-1 do begin
+    idx1:=GetRandom(Length(seq)) ;
+    idx2:=GetRandom(Length(seq)) ;
+    tmp:=seq[idx1] ;
+    seq[idx1]:=seq[idx2] ;
+    seq[idx2]:=tmp ;
+  end ;
+  nextp:=0 ;
+end ;
+
+destructor TLevel.Destroy ;
+begin
+  SetLength(seq,0) ;
+  inherited Destroy ; 
 end ;
 
 function TLevel.getLevelN():Integer ;
@@ -46,7 +68,9 @@ end ;
 
 function TLevel.getRandomBlockCode():Integer ;
 begin
-  Result:=freq[GetRandom(Length(freq))]
+  Result:=seq[nextp] ;
+  Inc(nextp) ;
+  if nextp=Length(seq) then nextp:=0 ;
 end ;
 
 function TLevel.getWaterTime():Byte ;
