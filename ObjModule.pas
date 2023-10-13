@@ -28,10 +28,10 @@ const
       CODE_FINISH    = 22 ;
       CODE_WALL      = 23 ;
 
-      levelcount = 6 ;
-      levelwatertimes:array[0..LEVELCOUNT-1] of Byte = (20,20,20,40,50,60) ;
+      levelcount = 8 ;
+      levelwatertimes:array[0..LEVELCOUNT-1] of Byte = (20,20,30,40,50,50,60,60) ;
       levelcodes:array[0..LEVELCOUNT-2] of string[5] = 
-        ('73128','89423','37591','69027','63821') ;
+        ('73128','89423','37591','69027','63821','48915','19543') ;
 
       // —лева направо, 1 в 1
       level1_blocks:array[0..5] of Byte = (
@@ -71,13 +71,38 @@ const
       level5_freq_blocks:array[0..8] of Byte = 
         (1,1,1,2,3,4,5,6,7) ;
 
+      // 2 в 1 со стенами
+      level6_blocks:array[0..20] of Byte = (
+        CODE_STARTVERT,3,1,
+        CODE_STARTVERT,6,1,
+        CODE_WALL,1,4,
+        CODE_WALL,3,4,
+        CODE_WALL,5,4,
+        CODE_WALL,7,4,
+        CODE_FINISH,4,9) ;
+      level6_freq_blocks:array[0..19] of Byte = 
+        (0,0,0,0,1,1,1,1,2,2,3,3,4,4,5,5,6,7,8,9) ;
+
       // 2 в 2 
-      level6_blocks:array[0..11] of Byte = (
+      level7_blocks:array[0..11] of Byte = (
         CODE_STARTVERT,3,0,
         CODE_STARTHORZ,0,3,
         CODE_FINISH,7,9,
         CODE_FINISH,9,7) ;
-      level6_freq_blocks:array[0..20] of Byte = 
+      level7_freq_blocks:array[0..20] of Byte = 
+        (0,0,0,0,1,1,1,1,2,2,3,3,4,4,5,5,6,7,8,9,10) ;
+
+      // 2 в 2 со стенами
+      level8_blocks:array[0..23] of Byte = (
+        CODE_STARTVERT,4,0,
+        CODE_STARTHORZ,0,4,
+        CODE_WALL,4,4,
+        CODE_WALL,4,5,
+        CODE_WALL,5,4,
+        CODE_WALL,5,5,
+        CODE_FINISH,5,9,
+        CODE_FINISH,9,5) ;
+      level8_freq_blocks:array[0..20] of Byte = 
         (0,0,0,0,1,1,1,1,2,2,3,3,4,4,5,5,6,7,8,9,10) ;
 
 implementation

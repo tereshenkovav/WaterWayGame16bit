@@ -36,12 +36,16 @@ begin
   if leveln=3 then arr:=level4_blocks ;
   if leveln=4 then arr:=level5_blocks ;
   if leveln=5 then arr:=level6_blocks ;
+  if leveln=6 then arr:=level7_blocks ;
+  if leveln=7 then arr:=level8_blocks ;
   if leveln=0 then src:=level1_freq_blocks ;
   if leveln=1 then src:=level2_freq_blocks ;
   if leveln=2 then src:=level3_freq_blocks ;
   if leveln=3 then src:=level4_freq_blocks ;
   if leveln=4 then src:=level5_freq_blocks ;
   if leveln=5 then src:=level6_freq_blocks ;
+  if leveln=6 then src:=level7_freq_blocks ;
+  if leveln=7 then src:=level8_freq_blocks ;
   SetLength(seq,Length(src)) ;
   for i:=0 to Length(seq)-1 do
     seq[i]:=src[i] ;
