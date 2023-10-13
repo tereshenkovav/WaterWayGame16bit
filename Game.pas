@@ -1,5 +1,7 @@
 unit Game ;
 
+{$DEFINE RELEASE}
+
 interface
 uses Block, CommonClasses, Level ;
 
