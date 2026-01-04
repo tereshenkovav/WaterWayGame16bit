@@ -181,6 +181,7 @@ var key,scan:Byte ;
     p,idx,idx2:Integer ;
     newfill:array[0..15] of TNewWater ;
     cnt,cntfilled:Integer ;
+    watergo:Boolean ;
 begin
   Result:=True ;
   if state<>gsNormal then Exit ;
@@ -234,9 +235,11 @@ begin
   Inc(ticks) ;
   if ticks mod 3 = 0 then begin
     p:=0 ;
+    watergo:=False ;
     for i:=0 to MAPSIZE-1 do
       for j:=0 to MAPSIZE-1 do
         if map[i][j].UpdateWater() then begin
+         watergo:=True ;
          map[i][j].Draw(i,j) ;
          RedrawSelectorIfAt(i,j) ;
          for e:=0 to 3 do begin
@@ -269,6 +272,10 @@ begin
       RedrawSelectorIfAt(newfill[i].i,newfill[i].j) ;
     end ;  
 
+    if (not watergo)and(startleft<=0) then begin
+      state:=gsFail ;
+      Exit ;
+    end ;
   end ;
 
   if startleft>0 then begin
